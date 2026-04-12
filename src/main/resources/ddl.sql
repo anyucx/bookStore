@@ -1,6 +1,5 @@
--- 兼容入口：保留 schema.sql 以兼容历史启动流程。
--- 推荐入口：优先执行 src/main/resources/ddl.sql。
--- 执行顺序：ddl.sql -> dml.sql。
+-- 推荐初始化入口（结构脚本）：ddl.sql
+-- 执行顺序：ddl.sql -> dml.sql
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;

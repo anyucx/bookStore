@@ -12,17 +12,17 @@ import javax.servlet.http.HttpServletRequest;
 
 
 public class EncodingFilter implements Filter {
-	private String charset = "GB2312";
+	private String charset = "UTF-8";
 	public void destroy() {}
 
 	public void doFilter(ServletRequest request, ServletResponse response,FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		if(req.getMethod().equalsIgnoreCase("GET")) {
 			if(!(req instanceof GetRequest)) {
-				req = new GetRequest(req, charset);//´¦ÀígetÇëÇó±àÂë
+				req = new GetRequest(req, charset);//ï¿½ï¿½ï¿½ï¿½getï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			}
 		} else {
-			req.setCharacterEncoding(charset);//´¦ÀípostÇëÇó±àÂë
+			req.setCharacterEncoding(charset);//ï¿½ï¿½ï¿½ï¿½postï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		}
 		chain.doFilter(req, response);
 	}

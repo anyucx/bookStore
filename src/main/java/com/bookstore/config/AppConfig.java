@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -26,6 +27,7 @@ import java.nio.file.Paths;
 @Configuration
 public class AppConfig implements WebMvcConfigurer {
     @Resource
+    @Lazy
     private AuthInterceptor authInterceptor;
 
     @Value("${bookstore.file.base-path:uploads}")

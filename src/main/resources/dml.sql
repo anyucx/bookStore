@@ -1,5 +1,5 @@
--- 兼容入口：保留 data.sql 以兼容历史启动流程。
--- 推荐入口：优先执行 src/main/resources/dml.sql（需先执行 ddl.sql）。
+-- 推荐初始化入口（数据脚本）：dml.sql
+-- 执行前请先完成 ddl.sql
 
 SET NAMES utf8mb4;
 

@@ -35,7 +35,7 @@ async function handleCommand(command: string) {
           <router-link to="/" style="display: flex; align-items: center; gap: 12px">
             <div class="cover-placeholder" style="width: 46px; height: 46px; border-radius: 16px; font-size: 20px; font-weight: 700">阅</div>
             <div>
-              <div style="font-size: 18px; font-weight: 800">知页书城</div>
+              <div style="font-size: 18px; font-weight: 800">寥若晨星书城</div>
               <div style="font-size: 12px; color: var(--text-secondary)">现代化在线图书商城</div>
             </div>
           </router-link>

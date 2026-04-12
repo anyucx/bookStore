@@ -33,7 +33,7 @@ async function logout() {
         <div style="display: flex; align-items: center; gap: 12px; padding: 6px 8px 18px">
           <div class="cover-placeholder" style="width: 48px; height: 48px; border-radius: 18px; font-size: 20px; font-weight: 700">管</div>
           <div>
-            <div style="font-size: 18px; font-weight: 800">知页书城后台</div>
+            <div style="font-size: 18px; font-weight: 800">寥若晨星书城后台</div>
             <div style="font-size: 12px; color: var(--text-secondary)">运营中心</div>
           </div>
         </div>
