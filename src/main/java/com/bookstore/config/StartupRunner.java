@@ -30,14 +30,14 @@ public class StartupRunner implements CommandLineRunner {
 
         log.info("====================================================================");
         log.info("项目启动成功！");
-        log.info("商城首页: {}", baseUrl);
-        log.info("管理后台登录地址: {}", adminLoginUrl);
+        log.info("商城首页 (Shop): {}", baseUrl);
+        log.info("管理后台 (Admin): {}", adminLoginUrl);
         log.info("管理员账号: admin");
         log.info("管理员密码: 123456");
         log.info("====================================================================");
 
         // 自动打开浏览器首页
-        try {
+       /* try {
             String os = System.getProperty("os.name").toLowerCase();
             if (os.contains("win")) {
                 // Windows 环境下优先尝试 cmd /c start，因为它更可靠地处理默认浏览器
@@ -50,6 +50,6 @@ public class StartupRunner implements CommandLineRunner {
             }
         } catch (Exception e) {
             log.warn("无法自动打开浏览器，请手动访问: {}", baseUrl);
-        }
+        }*/
     }
 }

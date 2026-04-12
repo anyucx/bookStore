@@ -312,9 +312,22 @@ java -jar target/bookstore-api-1.0.0-SNAPSHOT.jar
 - 购物车、订单并发扣减库存逻辑较为基础，高并发下仍需要进一步强化防超卖方案；
 - 历史 `WebRoot/` JSP 资源仍保留在仓库中，但当前主流程以前后端分离 SPA 为主；
 - 文件存储默认走本地磁盘，适用于单机演示，生产环境建议切换对象存储；
-- 当前仓库已提交 `frontend/dist`，适合演示与统一托管；若后续改为 CI 产物驱动，需要补充前端构建流水线。
+- 当前仓库已提交 `frontend/dist`，适合演示 with 统一托管；若后续改为 CI 产物驱动，需要补充前端构建流水线。
 
-## 11. 关键目录速览
+## 11. 日志与审计
+
+### 11.1 后台日志精简
+- 控制台输出已通过 `logback-spring.xml` 精简。
+- 所有日志同步记录至项目根目录的 `logs/app.log`，并支持按天滚动归档。
+- `logs/` 目录已加入 `.gitignore`。
+
+### 11.2 操作日志审计
+- 系统引入了通用的 `@Log` 注解，用于记录核心业务操作。
+- 审计内容包括：操作人、IP 地址、接口路径、请求方法、请求参数、响应结果、执行耗时等。
+- 数据持久化在 `operation_logs` 表中，方便后续安全排查与审计。
+- **移植建议**：若要将此功能迁移至其他项目，只需复制 `com.bookstore.common.annotation.Log` 和 `com.bookstore.common.aspect.LogAspect`，并确保数据库中存在 `operation_logs` 表即可。
+
+## 12. 关键目录速览
 
 ```text
 .

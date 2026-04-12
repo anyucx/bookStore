@@ -1,6 +1,7 @@
 package com.bookstore.controller;
 
 import com.bookstore.common.ApiResponse;
+import com.bookstore.common.annotation.Log;
 import com.bookstore.model.entity.Book;
 import com.bookstore.model.entity.Category;
 import com.bookstore.service.AdminService;
@@ -31,6 +32,7 @@ public class AdminController {
     @Resource private AdminService adminService;
 
     /** 管理员登录。 */
+    @Log("管理员登录")
     @PostMapping("/api/admin/auth/login")
     public ApiResponse<Map<String, Object>> adminLogin(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("登录成功", authService.login(body, true));
@@ -49,18 +51,21 @@ public class AdminController {
     }
 
     /** 新增分类。 */
+    @Log("新增分类")
     @PostMapping("/api/admin/categories")
     public ApiResponse<Category> addCategory(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("保存成功", catalogService.saveCategory(body));
     }
 
     /** 更新分类。 */
+    @Log("更新分类")
     @PutMapping("/api/admin/categories")
     public ApiResponse<Category> updateCategory(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("保存成功", catalogService.saveCategory(body));
     }
 
     /** 删除分类。 */
+    @Log("删除分类")
     @DeleteMapping("/api/admin/categories")
     public ApiResponse<Void> deleteCategory(@RequestParam("id") Long id) {
         catalogService.deleteCategory(id);
@@ -77,18 +82,21 @@ public class AdminController {
     }
 
     /** 新增图书。 */
+    @Log("新增图书")
     @PostMapping("/api/admin/books")
     public ApiResponse<Book> addBook(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("保存成功", catalogService.saveBook(body));
     }
 
     /** 更新图书。 */
+    @Log("更新图书")
     @PutMapping("/api/admin/books")
     public ApiResponse<Book> updateBook(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("保存成功", catalogService.saveBook(body));
     }
 
     /** 删除图书。 */
+    @Log("删除图书")
     @DeleteMapping("/api/admin/books")
     public ApiResponse<Void> deleteBook(@RequestParam("id") Long id) {
         catalogService.deleteBook(id);
@@ -103,6 +111,7 @@ public class AdminController {
     }
 
     /** 更新管理端订单状态。 */
+    @Log("更新订单状态")
     @PutMapping("/api/admin/orders")
     public ApiResponse<Map<String, Object>> updateOrder(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("更新成功", tradeService.adminUpdateOrderStatus(AppUtils.lng(body, "id"), AppUtils.str(body, "status")));
@@ -116,12 +125,14 @@ public class AdminController {
     }
 
     /** 更新管理端用户。 */
+    @Log("更新用户信息")
     @PutMapping("/api/admin/users")
     public ApiResponse<Map<String, Object>> updateUser(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("更新成功", authService.updateUser(body));
     }
 
     /** 上传文件。 */
+    @Log("上传文件")
     @PostMapping("/api/admin/files/upload")
     public ApiResponse<Map<String, Object>> upload(@RequestPart("file") MultipartFile file) throws IOException {
         return ApiResponse.success("上传成功", adminService.upload(file));

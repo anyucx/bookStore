@@ -1,6 +1,7 @@
 package com.bookstore.controller;
 
 import com.bookstore.common.ApiResponse;
+import com.bookstore.common.annotation.Log;
 import com.bookstore.model.entity.CartItem;
 import com.bookstore.service.TradeService;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,18 +28,21 @@ public class TradeController {
     }
 
     /** 新增购物车商品。 */
+    @Log("添加购物车")
     @PostMapping("/api/cart/items")
     public ApiResponse<CartItem> addCartItem(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("加入购物车成功", tradeService.addCartItem(body));
     }
 
     /** 更新购物车商品。 */
+    @Log("更新购物车")
     @PutMapping("/api/cart/items")
     public ApiResponse<CartItem> updateCartItem(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("更新成功", tradeService.updateCartItem(body));
     }
 
     /** 删除购物车商品。 */
+    @Log("删除购物车商品")
     @DeleteMapping("/api/cart/items")
     public ApiResponse<Void> deleteCartItem(@RequestParam("id") Long id) {
         tradeService.deleteCartItem(id);
@@ -58,30 +62,35 @@ public class TradeController {
     }
 
     /** 创建订单。 */
+    @Log("创建订单")
     @PostMapping("/api/orders")
     public ApiResponse<Map<String, Object>> createOrder(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("下单成功", tradeService.createOrder(body));
     }
 
     /** 取消订单。 */
+    @Log("取消订单")
     @PostMapping("/api/orders/{id}/cancel")
     public ApiResponse<Map<String, Object>> cancel(@PathVariable("id") Long id) {
         return ApiResponse.success("取消成功", tradeService.cancel(id));
     }
 
     /** 确认收货。 */
+    @Log("确认收货")
     @PostMapping("/api/orders/{id}/confirm")
     public ApiResponse<Map<String, Object>> confirm(@PathVariable("id") Long id) {
         return ApiResponse.success("确认收货成功", tradeService.confirm(id));
     }
 
     /** 支付预下单。 */
+    @Log("支付预下单")
     @PostMapping("/api/payments/prepare")
     public ApiResponse<Map<String, Object>> prepare(@RequestBody Map<String, Object> body) {
         return ApiResponse.success(tradeService.prepare(body));
     }
 
     /** 支付回调。 */
+    @Log("支付回调")
     @PostMapping("/api/payments/callback")
     public ApiResponse<Map<String, Object>> callback(@RequestBody Map<String, Object> body) {
         return ApiResponse.success(tradeService.callback(body));

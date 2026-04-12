@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
@@ -46,7 +46,8 @@ async function logout() {
         <div class="section-card" style="padding: 16px; margin-top: 18px">
           <div style="font-weight: 700">{{ authStore.user?.displayName }}</div>
           <div style="margin-top: 6px; color: var(--text-secondary)">{{ authStore.user?.role?.name }}</div>
-          <el-button type="danger" plain round style="width: 100%; margin-top: 16px" @click="logout">退出登录</el-button>
+          <el-button round style="width: 100%; margin-top: 16px" @click="router.push('/')">访问前台</el-button>
+          <el-button type="danger" plain round style="width: 100%; margin-top: 12px" @click="logout">退出登录</el-button>
         </div>
       </aside>
 

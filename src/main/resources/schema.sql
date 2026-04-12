@@ -1,11 +1,11 @@
--- 兼容入口：保留 schema.sql 以兼容历史启动流程。
--- 推荐入口：优先执行 src/main/resources/ddl.sql。
--- 执行顺序：ddl.sql -> dml.sql。
+-- 推荐初始化入口（结构脚本）：ddl.sql
+-- 执行顺序：ddl.sql -> dml.sql
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS file_resources;
+DROP TABLE IF EXISTS operation_logs;
 DROP TABLE IF EXISTS payment_records;
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
@@ -161,5 +161,21 @@ CREATE TABLE file_resources (
   KEY idx_files_deleted (deleted),
   CONSTRAINT fk_file_uploader FOREIGN KEY (uploader_id) REFERENCES users(id)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '文件资源表';
+
+CREATE TABLE operation_logs (
+  id BIGINT PRIMARY KEY COMMENT '日志ID',
+  user_id BIGINT DEFAULT NULL COMMENT '操作用户ID',
+  username VARCHAR(64) DEFAULT NULL COMMENT '操作用户名',
+  ip VARCHAR(64) DEFAULT NULL COMMENT 'IP地址',
+  method VARCHAR(128) NOT NULL COMMENT '接口方法',
+  path VARCHAR(255) NOT NULL COMMENT '请求路径',
+  params TEXT COMMENT '请求参数',
+  result TEXT COMMENT '响应结果',
+  start_time DATETIME NOT NULL COMMENT '开始时间',
+  end_time DATETIME NOT NULL COMMENT '结束时间',
+  duration_ms BIGINT NOT NULL COMMENT '执行耗时(ms)',
+  KEY idx_op_user (user_id),
+  KEY idx_op_time (start_time)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '操作日志表';
 
 SET FOREIGN_KEY_CHECKS = 1;

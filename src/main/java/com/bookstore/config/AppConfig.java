@@ -85,9 +85,14 @@ public class AppConfig implements WebMvcConfigurer {
                     @Override
                     protected org.springframework.core.io.Resource getResource(String resourcePath, org.springframework.core.io.Resource location) throws IOException {
                         org.springframework.core.io.Resource resource = location.createRelative(resourcePath);
+                        // 如果资源存在、可读且不是目录，则返回该资源
                         if (resource.exists() && resource.isReadable()) {
-                            return resource;
+                            // 检查是否为目录，如果是目录则应回退到 index.html
+                            if (!resource.getURL().getPath().endsWith("/")) {
+                                return resource;
+                            }
                         }
+                        // 否则尝试返回 SPA 的 index.html
                         if (shouldServeSpaIndex(resourcePath)) {
                             org.springframework.core.io.Resource index = location.createRelative(frontendIndexFile);
                             if (index.exists() && index.isReadable()) {

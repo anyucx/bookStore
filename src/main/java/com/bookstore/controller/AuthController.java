@@ -1,6 +1,7 @@
 package com.bookstore.controller;
 
 import com.bookstore.common.ApiResponse;
+import com.bookstore.common.annotation.Log;
 import com.bookstore.service.AuthService;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,18 +20,21 @@ public class AuthController {
     @Resource private AuthService authService;
 
     /** 用户注册。 */
+    @Log("用户注册")
     @PostMapping("/register")
     public ApiResponse<Map<String, Object>> register(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("注册成功", authService.register(body));
     }
 
     /** 用户登录。 */
+    @Log("用户登录")
     @PostMapping("/login")
     public ApiResponse<Map<String, Object>> login(@RequestBody Map<String, Object> body) {
         return ApiResponse.success("登录成功", authService.login(body, false));
     }
 
     /** 用户退出登录。 */
+    @Log("用户登出")
     @PostMapping("/logout")
     public ApiResponse<Void> logout(@RequestHeader(value = "Authorization", required = false) String authorization) {
         String token = null;
