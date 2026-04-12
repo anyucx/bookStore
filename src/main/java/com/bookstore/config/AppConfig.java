@@ -79,7 +79,7 @@ public class AppConfig implements WebMvcConfigurer {
         String pattern = fileBaseUrlPrefix.endsWith("/") ? fileBaseUrlPrefix + "**" : fileBaseUrlPrefix + "/**";
         registry.addResourceHandler(pattern).addResourceLocations(Paths.get(fileBasePath).toAbsolutePath().normalize().toUri().toString());
         registry.addResourceHandler("/**")
-                .addResourceLocations("classpath:/static/", Paths.get(frontendDistPath).toAbsolutePath().normalize().toUri().toString())
+                .addResourceLocations("classpath:/static/", resolveFrontendDistLocation())
                 .resourceChain(false)
                 .addResolver(new PathResourceResolver() {
                     @Override
@@ -102,6 +102,14 @@ public class AppConfig implements WebMvcConfigurer {
                         return null;
                     }
                 });
+    }
+
+    private String resolveFrontendDistLocation() {
+        String location = Paths.get(frontendDistPath).toAbsolutePath().normalize().toUri().toString();
+        if (!location.endsWith("/")) {
+            return location + "/";
+        }
+        return location;
     }
 
     private boolean shouldServeSpaIndex(String resourcePath) {

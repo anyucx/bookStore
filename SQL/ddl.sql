@@ -1,6 +1,3 @@
--- 推荐初始化入口（结构脚本）：ddl.sql
--- 执行顺序：ddl.sql -> dml.sql
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 

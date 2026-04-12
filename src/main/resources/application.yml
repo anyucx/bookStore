@@ -30,8 +30,8 @@ spring:
     init:
       mode: always
       continue-on-error: true
-      schema-locations: classpath:schema.sql
-      data-locations: classpath:data.sql
+      schema-locations: file:./SQL/ddl.sql
+      data-locations: file:./SQL/dml.sql
 
 mybatis-plus:
   configuration:

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 
 @Aspect
@@ -30,8 +32,18 @@ public class LogAspect {
     @Resource
     private ObjectMapper objectMapper;
 
-    @Around("@annotation(logAnnotation)")
-    public Object around(ProceedingJoinPoint joinPoint, Log logAnnotation) throws Throwable {
+    @Around("execution(* com.bookstore.controller..*(..))")
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            return joinPoint.proceed();
+        }
+        HttpServletRequest request = attributes.getRequest();
+        Log logAnnotation = resolveLogAnnotation(joinPoint);
+        boolean shouldRecord = logAnnotation != null || "GET".equalsIgnoreCase(request.getMethod());
+        if (!shouldRecord) {
+            return joinPoint.proceed();
+        }
         LocalDateTime startTime = LocalDateTime.now();
         long startTimestamp = System.currentTimeMillis();
 
@@ -53,6 +65,26 @@ public class LogAspect {
         }
     }
 
+    private Log resolveLogAnnotation(ProceedingJoinPoint joinPoint) {
+        if (!(joinPoint.getSignature() instanceof MethodSignature)) {
+            return null;
+        }
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        Log annotation = method.getAnnotation(Log.class);
+        if (annotation != null) {
+            return annotation;
+        }
+        try {
+            Method implMethod = joinPoint.getTarget()
+                    .getClass()
+                    .getMethod(method.getName(), method.getParameterTypes());
+            return implMethod.getAnnotation(Log.class);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
+
     private void saveLog(ProceedingJoinPoint joinPoint, Log logAnnotation, 
                          LocalDateTime startTime, LocalDateTime endTime, long duration, 
                          Object result, Throwable throwable) {
@@ -67,7 +99,7 @@ public class LogAspect {
             opLog.endTime = endTime;
             opLog.durationMs = duration;
             opLog.path = request.getRequestURI();
-            opLog.method = joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName();
+            opLog.method = request.getMethod() + " " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName();
             opLog.ip = getClientIp(request);
 
             // 获取当前用户 (不抛异常，可能未登录)

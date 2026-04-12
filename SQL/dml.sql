@@ -1,6 +1,3 @@
--- 推荐初始化入口（数据脚本）：dml.sql
--- 执行前请先完成 ddl.sql
-
 SET NAMES utf8mb4;
 
 INSERT INTO roles (id, name, code, description, created_time) VALUES

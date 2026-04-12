@@ -1,19 +1,9 @@
-package com.bookstore.service;
+﻿package com.bookstore.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bookstore.common.BusinessException;
-import com.bookstore.mapper.BookMapper;
-import com.bookstore.mapper.BookOrderMapper;
-import com.bookstore.mapper.CartItemMapper;
-import com.bookstore.mapper.OrderItemMapper;
-import com.bookstore.mapper.PaymentRecordMapper;
-import com.bookstore.mapper.UserMapper;
-import com.bookstore.model.entity.Book;
-import com.bookstore.model.entity.BookOrder;
-import com.bookstore.model.entity.CartItem;
-import com.bookstore.model.entity.OrderItem;
-import com.bookstore.model.entity.PaymentRecord;
-import com.bookstore.model.entity.User;
+import com.bookstore.mapper.*;
+import com.bookstore.model.entity.*;
 import com.bookstore.util.AppUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,17 +26,28 @@ public class TradeService {
     public static final String CANCELLED = "CANCELLED";
     public static final String CONFIRMED = "CONFIRMED";
 
-    @Resource private CartItemMapper cartItemMapper;
-    @Resource private BookMapper bookMapper;
-    @Resource private BookOrderMapper orderMapper;
-    @Resource private OrderItemMapper orderItemMapper;
-    @Resource private PaymentRecordMapper paymentRecordMapper;
-    @Resource private UserMapper userMapper;
-    @Resource private AuthService authService;
-    @Resource private CatalogService catalogService;
-    @Resource private ObjectMapper objectMapper;
+    @Resource
+    private CartItemMapper cartItemMapper;
+    @Resource
+    private BookMapper bookMapper;
+    @Resource
+    private BookOrderMapper orderMapper;
+    @Resource
+    private OrderItemMapper orderItemMapper;
+    @Resource
+    private PaymentRecordMapper paymentRecordMapper;
+    @Resource
+    private UserMapper userMapper;
+    @Resource
+    private AuthService authService;
+    @Resource
+    private CatalogService catalogService;
+    @Resource
+    private ObjectMapper objectMapper;
 
-    /** 当前用户购物车。 */
+    /**
+     * 当前用户购物车。
+     */
     public List<Map<String, Object>> cartItems() {
         User user = authService.currentUser();
         List<CartItem> list = cartItemMapper.selectList(new QueryWrapper<CartItem>().eq("user_id", user.id).orderByDesc("updated_time"));
@@ -54,23 +55,33 @@ public class TradeService {
         for (CartItem item : list) {
             Book book = catalogService.bookEntity(item.bookId, false);
             Map<String, Object> m = new HashMap<String, Object>();
-            m.put("id", item.id); m.put("quantity", item.quantity); m.put("selected", item.selected);
+            m.put("id", item.id);
+            m.put("quantity", item.quantity);
+            m.put("selected", item.selected);
             m.put("subtotal", book.price.multiply(new BigDecimal(item.quantity)));
             Map<String, Object> bm = new HashMap<String, Object>();
-            bm.put("id", book.id); bm.put("name", book.name); bm.put("author", book.author); bm.put("coverUrl", book.coverUrl);
-            bm.put("price", book.price); bm.put("stock", book.stock);
-            m.put("book", bm); res.add(m);
+            bm.put("id", book.id);
+            bm.put("name", book.name);
+            bm.put("author", book.author);
+            bm.put("coverUrl", book.coverUrl);
+            bm.put("price", book.price);
+            bm.put("stock", book.stock);
+            m.put("book", bm);
+            res.add(m);
         }
         return res;
     }
 
-    /** 新增购物车商品。 */
+    /**
+     * 新增购物车商品。
+     */
     @Transactional(rollbackFor = Exception.class)
     public CartItem addCartItem(Map<String, Object> body) {
         User user = authService.currentUser();
         Long bookId = AppUtils.lng(body, "bookId");
         Integer quantity = AppUtils.integer(body, "quantity");
-        if (bookId == null || quantity == null || quantity < 1) throw new BusinessException(400, "bookId 和 quantity 必填");
+        if (bookId == null || quantity == null || quantity < 1)
+            throw new BusinessException(400, "bookId 和 quantity 必填");
         Book book = catalogService.bookEntity(bookId, false);
         if (book.stock < quantity) throw new BusinessException(400, "库存不足");
         CartItem item = cartItemMapper.selectOne(new QueryWrapper<CartItem>().eq("user_id", user.id).eq("book_id", bookId).last("limit 1"));
@@ -93,7 +104,9 @@ public class TradeService {
         return item;
     }
 
-    /** 修改购物车商品数量。 */
+    /**
+     * 修改购物车商品数量。
+     */
     @Transactional(rollbackFor = Exception.class)
     public CartItem updateCartItem(Map<String, Object> body) {
         Long id = AppUtils.lng(body, "id");
@@ -110,7 +123,9 @@ public class TradeService {
         return item;
     }
 
-    /** 删除购物车项。 */
+    /**
+     * 删除购物车项。
+     */
     @Transactional(rollbackFor = Exception.class)
     public void deleteCartItem(Long id) {
         User user = authService.currentUser();
@@ -119,7 +134,9 @@ public class TradeService {
         cartItemMapper.deleteById(id);
     }
 
-    /** 创建订单。 */
+    /**
+     * 创建订单。
+     */
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> createOrder(Map<String, Object> body) {
         User user = authService.currentUser();
@@ -128,7 +145,8 @@ public class TradeService {
         String receiverName = AppUtils.str(body, "receiverName");
         String receiverPhone = AppUtils.str(body, "receiverPhone");
         String receiverAddress = AppUtils.str(body, "receiverAddress");
-        if (!StringUtils.hasText(receiverName) || !StringUtils.hasText(receiverPhone) || !StringUtils.hasText(receiverAddress)) throw new BusinessException(400, "收货信息不能为空");
+        if (!StringUtils.hasText(receiverName) || !StringUtils.hasText(receiverPhone) || !StringUtils.hasText(receiverAddress))
+            throw new BusinessException(400, "收货信息不能为空");
         LocalDateTime now = LocalDateTime.now();
         BookOrder order = new BookOrder();
         order.id = AppUtils.nextId();
@@ -168,21 +186,28 @@ public class TradeService {
         return orderDetail(order.id, false);
     }
 
-    /** 当前用户订单列表。 */
+    /**
+     * 当前用户订单列表。
+     */
     public List<Map<String, Object>> orders() {
         User user = authService.currentUser();
         return buildOrders(orderMapper.selectList(new QueryWrapper<BookOrder>().eq("user_id", user.id).orderByDesc("created_time")), false);
     }
 
-    /** 获取订单详情，支持当前用户和管理员两种查看视角。 */
+    /**
+     * 获取订单详情，支持当前用户和管理员两种查看视角。
+     */
     public Map<String, Object> orderDetail(Long id, boolean admin) {
         BookOrder o = orderMapper.selectById(id);
         if (o == null) throw new BusinessException(404, "订单不存在");
-        if (!admin && !authService.currentUser().id.equals(o.userId)) throw new BusinessException(403, "无权查看该订单");
+        if (!admin && !authService.currentUser().id.equals(o.userId))
+            throw new BusinessException(403, "无权查看该订单");
         return buildOrders(java.util.Collections.singletonList(o), true).get(0);
     }
 
-    /** 管理端订单列表。 */
+    /**
+     * 管理端订单列表。
+     */
     public List<Map<String, Object>> adminOrders(String status, String keyword) {
         QueryWrapper<BookOrder> qw = new QueryWrapper<BookOrder>().orderByDesc("created_time");
         if (StringUtils.hasText(status)) qw.eq("status", status);
@@ -190,7 +215,9 @@ public class TradeService {
         return buildOrders(orderMapper.selectList(qw), true);
     }
 
-    /** 管理端更新订单状态。 */
+    /**
+     * 管理端更新订单状态。
+     */
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> adminUpdateOrderStatus(Long id, String status) {
         if (id == null || !StringUtils.hasText(status)) throw new BusinessException(400, "订单标识和状态不能为空");
@@ -205,7 +232,9 @@ public class TradeService {
         return orderDetail(id, true);
     }
 
-    /** 取消订单。 */
+    /**
+     * 取消订单。
+     */
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> cancel(Long id) {
         BookOrder o = ownerOrder(id);
@@ -216,7 +245,9 @@ public class TradeService {
         return orderDetail(id, false);
     }
 
-    /** 确认收货。 */
+    /**
+     * 确认收货。
+     */
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> confirm(Long id) {
         BookOrder o = ownerOrder(id);
@@ -227,7 +258,9 @@ public class TradeService {
         return orderDetail(id, false);
     }
 
-    /** 模拟支付预下单。 */
+    /**
+     * 模拟支付预下单。
+     */
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> prepare(Map<String, Object> body) {
         Long orderId = AppUtils.lng(body, "orderId");
@@ -245,14 +278,22 @@ public class TradeService {
         p.payStatus = "PREPARED";
         p.amount = order.totalAmount;
         p.updatedTime = LocalDateTime.now();
-        if (paymentRecordMapper.selectById(p.id) == null) paymentRecordMapper.insert(p); else paymentRecordMapper.updateById(p);
+        if (paymentRecordMapper.selectById(p.id) == null) paymentRecordMapper.insert(p);
+        else paymentRecordMapper.updateById(p);
         Map<String, Object> m = new HashMap<String, Object>();
-        m.put("paymentId", p.id); m.put("orderId", order.id); m.put("orderNo", order.orderNo); m.put("amount", p.amount);
-        m.put("payChannel", p.payChannel); m.put("mockPayUrl", "/mock/pay?orderNo=" + order.orderNo); m.put("callbackUrl", "/api/payments/callback");
+        m.put("paymentId", p.id);
+        m.put("orderId", order.id);
+        m.put("orderNo", order.orderNo);
+        m.put("amount", p.amount);
+        m.put("payChannel", p.payChannel);
+        m.put("mockPayUrl", "/mock/pay?orderNo=" + order.orderNo);
+        m.put("callbackUrl", "/api/payments/callback");
         return m;
     }
 
-    /** 模拟支付回调。 */
+    /**
+     * 模拟支付回调。
+     */
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> callback(Map<String, Object> body) {
         Long orderId = AppUtils.lng(body, "orderId");
@@ -272,12 +313,16 @@ public class TradeService {
         p.callbackContent = json(body);
         p.paidTime = LocalDateTime.now();
         p.updatedTime = LocalDateTime.now();
-        if (paymentRecordMapper.selectById(p.id) == null) paymentRecordMapper.insert(p); else paymentRecordMapper.updateById(p);
+        if (paymentRecordMapper.selectById(p.id) == null) paymentRecordMapper.insert(p);
+        else paymentRecordMapper.updateById(p);
         order.status = PAID;
         order.updatedTime = LocalDateTime.now();
         orderMapper.updateById(order);
         Map<String, Object> m = new HashMap<String, Object>();
-        m.put("orderId", order.id); m.put("orderNo", order.orderNo); m.put("status", order.status); m.put("transactionNo", p.transactionNo);
+        m.put("orderId", order.id);
+        m.put("orderNo", order.orderNo);
+        m.put("status", order.status);
+        m.put("transactionNo", p.transactionNo);
         return m;
     }
 
@@ -292,15 +337,28 @@ public class TradeService {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         for (BookOrder o : orders) {
             Map<String, Object> m = new HashMap<String, Object>();
-            m.put("id", o.id); m.put("orderNo", o.orderNo); m.put("status", o.status); m.put("totalAmount", o.totalAmount);
-            m.put("receiverName", o.receiverName); m.put("receiverPhone", o.receiverPhone); m.put("receiverAddress", o.receiverAddress);
-            m.put("remark", o.remark); m.put("createdTime", o.createdTime); m.put("updatedTime", o.updatedTime);
+            m.put("id", o.id);
+            m.put("orderNo", o.orderNo);
+            m.put("status", o.status);
+            m.put("totalAmount", o.totalAmount);
+            m.put("receiverName", o.receiverName);
+            m.put("receiverPhone", o.receiverPhone);
+            m.put("receiverAddress", o.receiverAddress);
+            m.put("remark", o.remark);
+            m.put("createdTime", o.createdTime);
+            m.put("updatedTime", o.updatedTime);
             List<OrderItem> items = orderItemMapper.selectList(new QueryWrapper<OrderItem>().eq("order_id", o.id).orderByAsc("id"));
             List<Map<String, Object>> im = new ArrayList<Map<String, Object>>();
             for (OrderItem i : items) {
                 Map<String, Object> x = new HashMap<String, Object>();
-                x.put("id", i.id); x.put("bookId", i.bookId); x.put("bookName", i.bookName); x.put("bookAuthor", i.bookAuthor);
-                x.put("coverUrl", i.coverUrl); x.put("quantity", i.quantity); x.put("price", i.price); x.put("amount", i.amount);
+                x.put("id", i.id);
+                x.put("bookId", i.bookId);
+                x.put("bookName", i.bookName);
+                x.put("bookAuthor", i.bookAuthor);
+                x.put("coverUrl", i.coverUrl);
+                x.put("quantity", i.quantity);
+                x.put("price", i.price);
+                x.put("amount", i.amount);
                 im.add(x);
             }
             m.put("items", im);
@@ -308,7 +366,10 @@ public class TradeService {
                 User u = userMapper.selectById(o.userId);
                 if (u != null) {
                     Map<String, Object> um = new HashMap<String, Object>();
-                    um.put("id", u.id); um.put("username", u.username); um.put("displayName", u.displayName); um.put("phone", u.phone);
+                    um.put("id", u.id);
+                    um.put("username", u.username);
+                    um.put("displayName", u.displayName);
+                    um.put("phone", u.phone);
                     m.put("user", um);
                 }
             }
@@ -318,6 +379,10 @@ public class TradeService {
     }
 
     private String json(Map<String, Object> body) {
-        try { return objectMapper.writeValueAsString(body); } catch (JsonProcessingException ex) { return String.valueOf(body); }
+        try {
+            return objectMapper.writeValueAsString(body);
+        } catch (JsonProcessingException ex) {
+            return String.valueOf(body);
+        }
     }
 }
