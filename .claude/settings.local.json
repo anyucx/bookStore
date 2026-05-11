@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xxd)"
+      "Bash(xxd)",
+      "Bash(ls -R \"D:/A_CODE/bookstore/frontend/src/views/\"*.vue)",
+      "Bash(dir /s /b \"D:\\\\A_CODE\\\\bookstore\\\\frontend\\\\src\\\\views\\\\*.vue\")",
+      "Bash(dir /s /b \"D:\\\\A_CODE\\\\bookstore\\\\frontend\\\\src\\\\components\\\\*.vue\")",
+      "Bash(dir /s /b \"D:\\\\A_CODE\\\\bookstore\\\\frontend\\\\src\\\\layouts\\\\*.vue\")"
     ]
   }
 }

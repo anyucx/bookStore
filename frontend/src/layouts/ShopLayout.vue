@@ -31,12 +31,12 @@ async function handleCommand(command: string) {
   <div style="padding: 20px 0 40px">
     <header class="page-shell glass-card" style="padding: 16px 18px; position: sticky; top: 12px; z-index: 30">
       <div class="toolbar-row">
-        <div style="display: flex; align-items: center; gap: 14px">
-          <router-link to="/" style="display: flex; align-items: center; gap: 12px">
-            <div class="cover-placeholder" style="width: 46px; height: 46px; border-radius: 16px; font-size: 20px; font-weight: 700">阅</div>
+        <div class="flex-align-center-md">
+          <router-link to="/" class="flex-align-center-sm">
+            <div class="cover-placeholder cover-icon" style="font-size: 20px; font-weight: 700">阅</div>
             <div>
-              <div style="font-size: 18px; font-weight: 800">寥若晨星书城</div>
-              <div style="font-size: 12px; color: var(--text-secondary)">现代化在线图书商城</div>
+              <div class="text-xl-bold">寥若晨星书城</div>
+              <div class="text-xs text-muted">现代化在线图书商城</div>
             </div>
           </router-link>
           <el-menu :default-active="activeMenu" mode="horizontal" router :ellipsis="false" style="border-bottom: none; background: transparent">
@@ -46,15 +46,15 @@ async function handleCommand(command: string) {
             <el-menu-item index="/orders">订单列表</el-menu-item>
           </el-menu>
         </div>
-        <div style="display: flex; gap: 12px; align-items: center">
+        <div class="flex-align-center-sm">
           <el-button round @click="router.push('/admin/login')">后台入口</el-button>
           <template v-if="authStore.isAuthenticated">
             <el-dropdown @command="handleCommand">
-              <div style="display: flex; align-items: center; gap: 10px; cursor: pointer">
+              <div class="flex-align-center-sm" style="cursor: pointer">
                 <el-avatar :size="38">{{ authStore.user?.displayName?.slice(0, 1) || '读' }}</el-avatar>
                 <div>
                   <div style="font-weight: 700">{{ authStore.user?.displayName }}</div>
-                  <div style="font-size: 12px; color: var(--text-secondary)">@{{ authStore.user?.username }}</div>
+                  <div class="text-xs text-muted">@{{ authStore.user?.username }}</div>
                 </div>
               </div>
               <template #dropdown>

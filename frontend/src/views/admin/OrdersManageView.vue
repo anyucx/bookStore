@@ -41,12 +41,12 @@ onMounted(loadData);
 </script>
 
 <template>
-  <div style="display: grid; gap: 20px">
+  <div class="admin-page-gap">
     <PageHeader title="订单管理" description="后台查看订单、用户与收货信息，并支持必要的状态维护。" extra="Order Management" />
 
     <SectionCard title="订单列表" description="对接 /api/admin/orders，支持状态筛选、检索与状态维护。">
-      <div class="toolbar-row" style="margin-bottom: 18px">
-        <div style="display: flex; gap: 12px; flex-wrap: wrap">
+      <div class="toolbar-row toolbar-mb">
+        <div class="flex-row-wrap-sm">
           <el-input v-model="filters.keyword" placeholder="订单号 / 收货人" clearable style="width: 280px" />
           <el-select v-model="filters.status" placeholder="全部状态" clearable style="width: 180px">
             <el-option label="待支付" value="CREATED" />
@@ -55,7 +55,7 @@ onMounted(loadData);
             <el-option label="已完成" value="CONFIRMED" />
           </el-select>
         </div>
-        <div style="display: flex; gap: 12px">
+        <div class="flex-row-sm">
           <el-button round @click="loadData">筛选</el-button>
           <el-button round @click="filters.keyword = ''; filters.status = ''; loadData()">重置</el-button>
         </div>
@@ -80,11 +80,10 @@ onMounted(loadData);
         </el-table-column>
         <el-table-column label="操作" min-width="220" fixed="right">
           <template #default="scope">
-            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <div class="flex-row-xs" style="flex-wrap: wrap">
               <el-button
                 v-if="scope.row.status === 'CREATED'"
                 round
-                size="small"
                 type="warning"
                 :loading="submittingId === scope.row.id"
                 @click="updateOrderStatus(scope.row.id, 'PAID')"
@@ -94,7 +93,6 @@ onMounted(loadData);
               <el-button
                 v-if="scope.row.status === 'PAID'"
                 round
-                size="small"
                 type="success"
                 :loading="submittingId === scope.row.id"
                 @click="updateOrderStatus(scope.row.id, 'CONFIRMED')"
@@ -104,7 +102,6 @@ onMounted(loadData);
               <el-button
                 v-if="scope.row.status === 'CREATED'"
                 round
-                size="small"
                 type="danger"
                 plain
                 :loading="submittingId === scope.row.id"

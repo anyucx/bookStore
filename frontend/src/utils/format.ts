@@ -13,13 +13,13 @@ export function formatDate(value?: string) {
   if (Number.isNaN(date.getTime())) {
     return value;
   }
-  return new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
+  const y = date.getFullYear();
+  const M = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const H = String(date.getHours()).padStart(2, '0');
+  const m = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
+  return `${y}-${M}-${d} ${H}:${m}:${s}`;
 }
 
 export function buildCategoryTree(items: Array<Partial<CategoryTreeNode> & { id: number; parentId?: number; name: string }>) {
@@ -73,4 +73,18 @@ export function statusType(status: string) {
     CONFIRMED: 'success',
   };
   return map[status] || 'info';
+}
+
+/** 枚举型实体状态映射 (book / category / user)。 */
+export function entityStatusLabel(status: number | string, kind: 'book' | 'category' | 'user') {
+  const val = Number(status);
+  if (kind === 'user') return val === 1 ? '启用' : '禁用';
+  if (kind === 'book') return val === 1 ? '上架' : '下架';
+  return val === 1 ? '启用' : '停用';
+}
+
+export function entityStatusType(status: number | string, kind: 'book' | 'category' | 'user'): 'success' | 'danger' | 'info' {
+  const val = Number(status);
+  if (kind === 'user') return val === 1 ? 'success' : 'danger';
+  return val === 1 ? 'success' : 'info';
 }

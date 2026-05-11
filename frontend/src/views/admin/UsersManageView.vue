@@ -1,10 +1,11 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 
 import { adminApi } from '@/api/admin';
 import PageHeader from '@/components/common/PageHeader.vue';
 import SectionCard from '@/components/common/SectionCard.vue';
+import StatusTag from '@/components/common/StatusTag.vue';
 import type { UserInfo } from '@/types';
 import { formatDate } from '@/utils/format';
 
@@ -58,19 +59,19 @@ onMounted(loadData);
 </script>
 
 <template>
-  <div style="display: grid; gap: 20px">
+  <div class="admin-page-gap">
     <PageHeader title="用户管理" description="覆盖后台用户查询与状态维护。" extra="User Management" />
 
     <SectionCard title="用户列表" description="对接 /api/admin/users 查询与更新接口。">
-      <div class="toolbar-row" style="margin-bottom: 18px">
-        <div style="display: flex; gap: 12px; flex-wrap: wrap">
+      <div class="toolbar-row toolbar-mb">
+        <div class="flex-row-wrap-sm">
           <el-input v-model="filters.keyword" placeholder="用户名 / 昵称" clearable style="width: 280px" />
           <el-select v-model="filters.status" placeholder="全部状态" clearable style="width: 180px">
             <el-option label="启用" :value="1" />
             <el-option label="禁用" :value="0" />
           </el-select>
         </div>
-        <div style="display: flex; gap: 12px">
+        <div class="flex-row-sm">
           <el-button round @click="loadData">筛选</el-button>
           <el-button round @click="filters.keyword = ''; filters.status = undefined; loadData()">重置</el-button>
         </div>
@@ -83,7 +84,9 @@ onMounted(loadData);
           <template #default="scope">{{ scope.row.role?.name || scope.row.role?.code || '--' }}</template>
         </el-table-column>
         <el-table-column label="状态" width="100">
-          <template #default="scope"><el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" round>{{ scope.row.status === 1 ? '启用' : '禁用' }}</el-tag></template>
+          <template #default="scope">
+            <StatusTag kind="user" :status="scope.row.status" />
+          </template>
         </el-table-column>
         <el-table-column prop="phone" label="手机号" min-width="140" />
         <el-table-column prop="email" label="邮箱" min-width="180" />
@@ -105,7 +108,7 @@ onMounted(loadData);
             <el-radio :value="0">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="角色 ID"><el-input-number v-model="form.roleId" :min="1" style="width: 100%" /></el-form-item>
+        <el-form-item label="角色 ID"><el-input-number v-model="form.roleId" :min="1" class="w-full" /></el-form-item>
       </el-form>
       <template #footer>
         <el-button round @click="dialogVisible = false">取消</el-button>

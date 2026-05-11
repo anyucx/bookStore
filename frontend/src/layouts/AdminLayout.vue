@@ -30,11 +30,11 @@ async function logout() {
   <div style="padding: 20px 0 28px">
     <div class="page-shell admin-two-col">
       <aside class="glass-card" style="padding: 18px; min-height: calc(100vh - 40px); position: sticky; top: 20px">
-        <div style="display: flex; align-items: center; gap: 12px; padding: 6px 8px 18px">
-          <div class="cover-placeholder" style="width: 48px; height: 48px; border-radius: 18px; font-size: 20px; font-weight: 700">管</div>
+        <div class="flex-align-center-sm" style="padding: 6px 8px 18px">
+          <div class="cover-placeholder cover-icon" style="font-size: 20px; font-weight: 700">管</div>
           <div>
-            <div style="font-size: 18px; font-weight: 800">寥若晨星书城后台</div>
-            <div style="font-size: 12px; color: var(--text-secondary)">运营中心</div>
+            <div class="text-xl-bold">寥若晨星书城后台</div>
+            <div class="text-xs text-muted">运营中心</div>
           </div>
         </div>
         <el-menu :default-active="activeMenu" router style="border-right: none; background: transparent">
@@ -44,14 +44,14 @@ async function logout() {
           </el-menu-item>
         </el-menu>
         <div class="section-card" style="padding: 16px; margin-top: 18px">
-          <div style="font-weight: 700">{{ authStore.user?.displayName }}</div>
-          <div style="margin-top: 6px; color: var(--text-secondary)">{{ authStore.user?.role?.name }}</div>
-          <el-button round style="width: 100%; margin-top: 16px" @click="router.push('/')">访问前台</el-button>
-          <el-button type="danger" plain round style="width: 100%; margin-top: 12px" @click="logout">退出登录</el-button>
+          <div class="text-lg-bold">{{ authStore.user?.displayName }}</div>
+          <div class="text-muted" style="margin-top: 6px">{{ authStore.user?.role?.name }}</div>
+          <el-button class="w-full" round style="margin-top: 16px" @click="router.push('/')">访问前台</el-button>
+          <el-button class="w-full" type="danger" plain round style="margin-top: 12px" @click="logout">退出登录</el-button>
         </div>
       </aside>
 
-      <div style="display: grid; gap: 20px; align-content: start">
+      <div class="admin-page-gap" style="align-content: start">
         <router-view />
       </div>
     </div>

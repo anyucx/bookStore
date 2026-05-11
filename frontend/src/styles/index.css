@@ -206,3 +206,98 @@ img {
 .fade-leave-to {
   opacity: 0;
 }
+
+/* ===== spacing system ===== */
+:root {
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 24px;
+}
+
+/* ===== layout utilities ===== */
+.flex-row-xs { display: flex; gap: var(--spacing-xs); }
+.flex-row-sm { display: flex; gap: var(--spacing-sm); }
+.flex-row-wrap-sm { display: flex; gap: var(--spacing-sm); flex-wrap: wrap; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.flex-between-sm { display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-sm); }
+.flex-between-wrap-sm { display: flex; justify-content: space-between; gap: var(--spacing-sm); flex-wrap: wrap; }
+.flex-align-center-sm { display: flex; align-items: center; gap: var(--spacing-sm); }
+.flex-align-center-md { display: flex; align-items: center; gap: var(--spacing-md); }
+.flex-align-center-lg { display: flex; align-items: center; gap: var(--spacing-lg); }
+.flex-end-sm { display: flex; justify-content: flex-end; gap: var(--spacing-sm); flex-wrap: wrap; }
+
+.grid-stack-xs { display: grid; gap: var(--spacing-xs); }
+.grid-stack-sm { display: grid; gap: var(--spacing-sm); }
+.grid-stack-md { display: grid; gap: var(--spacing-md); }
+.grid-stack-lg { display: grid; gap: var(--spacing-lg); }
+
+.page-gap { display: grid; gap: var(--spacing-xl); }
+.admin-page-gap { display: grid; gap: var(--spacing-lg); }
+
+.w-full { width: 100%; }
+.pagination-mt { display: flex; justify-content: flex-end; margin-top: 18px; }
+
+/* ===== text utilities ===== */
+.text-muted { color: var(--text-secondary); }
+.text-brand { color: var(--primary); font-weight: 600; }
+.text-xs { font-size: 12px; }
+.text-lg-bold { font-size: 18px; font-weight: 700; }
+.text-xl-bold { font-size: 18px; font-weight: 800; }
+.text-stat-value { margin-top: var(--spacing-sm); font-size: 34px; font-weight: 700; line-height: 1.1; }
+.text-stat-label { margin: 0; color: var(--text-secondary); }
+.text-empty-title { font-size: 18px; font-weight: 700; color: var(--text); }
+
+/* ===== price fix ===== */
+.price-text.price-sm { font-size: 22px; }
+
+/* ===== cover placeholder sizes ===== */
+.cover-thumb { width: 52px; height: 68px; border-radius: 12px; overflow: hidden; }
+.cover-book { aspect-ratio: 4 / 5; border-radius: 20px; overflow: hidden; }
+.cover-detail { aspect-ratio: 4 / 5; border-radius: 24px; overflow: hidden; }
+.cover-item { width: 88px; min-width: 88px; height: 116px; border-radius: 16px; overflow: hidden; }
+.cover-icon { width: 52px; height: 52px; border-radius: 16px; }
+.cover-empty { width: 88px; height: 88px; margin: 0 auto; border-radius: 24px; overflow: hidden; }
+
+/* ===== card variants ===== */
+.section-card-padded { padding: var(--spacing-xl); }
+.book-card { padding: var(--spacing-md); display: grid; gap: 14px; }
+.order-card { padding: var(--spacing-lg); display: grid; gap: 18px; }
+.empty-card { padding: 48px var(--spacing-xl); text-align: center; }
+.stat-card-body { padding: var(--spacing-xl); min-height: 148px; }
+.stat-card-layout { display: flex; justify-content: space-between; gap: var(--spacing-sm); align-items: flex-start; }
+
+/* ===== section header ===== */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.section-desc {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+}
+
+/* ===== hero ===== */
+.hero-section { padding: 34px; overflow: hidden; }
+.hero-feature-card { padding: 22px; background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.16); color: #fff; }
+.hero-stat-card { padding: 22px; background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.16); color: #fff; }
+
+/* ===== auth ===== */
+.auth-form-gap { display: grid; gap: var(--spacing-lg); }
+.auth-title { margin: 8px 0 0; font-size: 30px; }
+
+/* ===== admin toolbar ===== */
+.toolbar-mb { margin-bottom: 18px; }
+
+/* ===== form ===== */
+.form-two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }

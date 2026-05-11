@@ -41,7 +41,7 @@ async function preparePayment(order: OrderInfo) {
   try {
     const payload = await tradeApi.preparePayment({ orderId: order.id, payChannel: 'MOCK' });
     ElMessageBox.alert(
-      `订单号：${payload.orderNo}\n支付金额：${formatMoney(payload.amount)}\n模拟支付链接：${payload.mockPayUrl}\n回调接口：${payload.callbackUrl}\n下一步可点击“模拟支付成功”完成闭环。`,
+      `订单号：${payload.orderNo}\n支付金额：${formatMoney(payload.amount)}\n模拟支付链接：${payload.mockPayUrl}\n回调接口：${payload.callbackUrl}\n下一步可点击"模拟支付成功"完成闭环。`,
       '已生成支付参数',
       { confirmButtonText: '知道了' },
     );
@@ -69,33 +69,33 @@ onMounted(loadOrders);
 </script>
 
 <template>
-  <div style="display: grid; gap: 24px">
+  <div class="page-gap">
     <PageHeader title="订单列表" description="查看订单状态，执行取消、支付预下单、模拟支付回调与确认收货。" extra="Order Center" />
 
     <SectionCard title="我的订单" description="订单接口已覆盖 /api/orders、订单详情、取消、确认、支付预下单与支付回调。">
-      <div v-if="orders.length" v-loading="loading" style="display: grid; gap: 18px">
-        <article v-for="order in orders" :key="order.id" class="section-card" style="padding: 20px; display: grid; gap: 18px">
+      <div v-if="orders.length" v-loading="loading" class="grid-stack-md" style="gap: 18px">
+        <article v-for="order in orders" :key="order.id" class="section-card order-card">
           <div class="toolbar-row">
             <div>
-              <div style="font-size: 18px; font-weight: 700">订单号 {{ order.orderNo }}</div>
-              <div style="margin-top: 8px; color: var(--text-secondary)">下单时间 {{ formatDate(order.createdTime) }}</div>
+              <div class="text-lg-bold">订单号 {{ order.orderNo }}</div>
+              <div class="text-muted" style="margin-top: 8px">下单时间 {{ formatDate(order.createdTime) }}</div>
             </div>
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+            <div class="flex-align-center-sm" style="flex-wrap: wrap">
               <StatusTag :status="order.status" />
-              <span class="price-text" style="font-size: 22px">{{ formatMoney(order.totalAmount) }}</span>
+              <span class="price-text price-sm">{{ formatMoney(order.totalAmount) }}</span>
             </div>
           </div>
 
           <div class="order-items">
             <div v-for="item in order.items" :key="item.id" class="order-item">
-              <div class="cover-placeholder" style="width: 82px; min-width: 82px; height: 110px; border-radius: 16px; overflow: hidden">
+              <div class="cover-placeholder cover-item">
                 <img v-if="item.coverUrl" :src="item.coverUrl" :alt="item.bookName" style="width: 100%; height: 100%; object-fit: cover" />
                 <span>BOOK</span>
               </div>
-              <div style="display: grid; gap: 10px; flex: 1">
+              <div class="grid-stack-sm" style="flex: 1">
                 <div style="font-size: 16px; font-weight: 700">{{ item.bookName }}</div>
-                <div style="color: var(--text-secondary)">{{ item.bookAuthor }}</div>
-                <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+                <div class="text-muted">{{ item.bookAuthor }}</div>
+                <div class="flex-between-sm">
                   <span>数量  {{ item.quantity }}</span>
                   <span>{{ formatMoney(item.amount) }}</span>
                 </div>
@@ -108,7 +108,7 @@ onMounted(loadOrders);
             <div class="info-row"><span>收货地址</span><strong>{{ order.receiverAddress }}</strong></div>
           </div>
 
-          <div style="display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap">
+          <div class="flex-end-sm">
             <el-button v-if="order.status === 'CREATED'" round type="danger" plain @click="cancelOrder(order.id)">取消订单</el-button>
             <el-button v-if="order.status === 'CREATED'" round type="primary" :loading="paying === order.id" @click="preparePayment(order)">去支付</el-button>
             <el-button v-if="order.status === 'CREATED'" round type="warning" :loading="callbacking === order.id" @click="finishPayment(order)">模拟支付成功</el-button>

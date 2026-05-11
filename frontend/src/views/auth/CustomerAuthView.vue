@@ -51,10 +51,10 @@ async function submitRegister() {
 
 <template>
   <AuthLayout title="连接读者与好书的现代化商城" description="登录后可查看个人购物车、创建订单并持续跟踪订单状态。" badge="Customer Portal">
-    <div style="display: grid; gap: 18px">
+    <div class="auth-form-gap">
       <div>
         <el-button text @click="router.push('/')">返回商城</el-button>
-        <h2 style="margin: 8px 0 0; font-size: 30px">登录 / 注册</h2>
+        <h2 class="auth-title">登录 / 注册</h2>
         <p class="page-desc">统一对接 /api/auth/register、/api/auth/login、/api/auth/logout、/api/auth/me。</p>
       </div>
 
@@ -63,7 +63,7 @@ async function submitRegister() {
           <el-form label-position="top" @submit.prevent="submitLogin">
             <el-form-item label="用户名"><el-input v-model="loginForm.username" placeholder="请输入用户名" /></el-form-item>
             <el-form-item label="密码"><el-input v-model="loginForm.password" show-password placeholder="请输入密码" /></el-form-item>
-            <el-button type="primary" round size="large" style="width: 100%" :loading="loading" @click="submitLogin">立即登录</el-button>
+            <el-button type="primary" round size="large" class="w-full" :loading="loading" @click="submitLogin">立即登录</el-button>
           </el-form>
         </el-tab-pane>
         <el-tab-pane label="注册" name="register">
@@ -74,7 +74,7 @@ async function submitRegister() {
             <el-form-item label="邮箱"><el-input v-model="registerForm.email" placeholder="选填" /></el-form-item>
             <el-form-item label="密码"><el-input v-model="registerForm.password" show-password placeholder="请输入密码" /></el-form-item>
             <el-form-item label="确认密码"><el-input v-model="registerForm.confirmPassword" show-password placeholder="请再次输入密码" /></el-form-item>
-            <el-button type="primary" round size="large" style="width: 100%" :loading="loading" @click="submitRegister">创建账号</el-button>
+            <el-button type="primary" round size="large" class="w-full" :loading="loading" @click="submitRegister">创建账号</el-button>
           </el-form>
         </el-tab-pane>
       </el-tabs>

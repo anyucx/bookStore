@@ -24,7 +24,7 @@ onMounted(loadData);
 </script>
 
 <template>
-  <div style="display: grid; gap: 20px" v-loading="loading">
+  <div class="admin-page-gap" v-loading="loading">
     <PageHeader title="仪表盘" description="总览图书、分类、用户、订单、支付与销售数据。" extra="Admin Overview" />
 
     <div class="book-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))">

@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRoute, useRouter } from 'vue-router';
@@ -43,10 +43,10 @@ onMounted(loadDetail);
 </script>
 
 <template>
-  <div v-loading="loading" style="display: grid; gap: 24px">
+  <div v-loading="loading" class="page-gap">
     <div v-if="book" class="responsive-grid" style="grid-template-columns: minmax(320px, 420px) minmax(0, 1fr)">
-      <section class="section-card" style="padding: 24px">
-        <div class="cover-placeholder" style="aspect-ratio: 4/5; border-radius: 28px; overflow: hidden">
+      <section class="section-card section-card-padded">
+        <div class="cover-placeholder cover-detail">
           <img v-if="book.coverUrl" :src="book.coverUrl" :alt="book.name" style="width: 100%; height: 100%; object-fit: cover" />
           <span v-else style="font-size: 28px; font-weight: 700">BOOK</span>
         </div>
@@ -75,7 +75,7 @@ onMounted(loadDetail);
           <div style="white-space: pre-wrap; line-height: 1.85; color: var(--text-secondary)">{{ book.description || '暂无图书简介。' }}</div>
         </SectionCard>
 
-        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+        <div class="flex-align-center-md" style="flex-wrap: wrap">
           <el-input-number v-model="quantity" :min="1" :max="book.stock || 1" />
           <el-button type="primary" size="large" round :loading="submitting" @click="addToCart">加入购物车</el-button>
           <el-button size="large" round @click="router.push('/cart')">前往购物车</el-button>

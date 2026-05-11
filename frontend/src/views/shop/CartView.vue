@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
@@ -67,7 +67,7 @@ onMounted(loadCart);
 </script>
 
 <template>
-  <div style="display: grid; gap: 24px">
+  <div class="page-gap">
     <PageHeader title="购物车" description="支持数量调整、删除商品和订单创建。" extra="Cart & Checkout">
       <template #actions>
         <el-button round @click="router.push('/books')">继续购书</el-button>
@@ -76,23 +76,23 @@ onMounted(loadCart);
 
     <div class="responsive-grid" style="grid-template-columns: minmax(0, 1fr) 340px">
       <SectionCard title="待结算图书" description="已接入 /api/cart/items 增删改查。">
-        <div v-if="items.length" v-loading="loading" style="display: grid; gap: 16px">
+        <div v-if="items.length" v-loading="loading" class="grid-stack-md">
           <div v-for="item in items" :key="item.id" class="order-item">
-            <div class="cover-placeholder" style="width: 92px; min-width: 92px; height: 120px; border-radius: 18px; overflow: hidden">
+            <div class="cover-placeholder cover-item">
               <img v-if="item.book.coverUrl" :src="item.book.coverUrl" :alt="item.book.name" style="width: 100%; height: 100%; object-fit: cover" />
               <span>BOOK</span>
             </div>
-            <div style="display: grid; gap: 12px; flex: 1">
+            <div class="grid-stack-sm" style="flex: 1">
               <div>
-                <div style="font-size: 18px; font-weight: 700">{{ item.book.name }}</div>
-                <div style="margin-top: 6px; color: var(--text-secondary)">{{ item.book.author }}</div>
+                <div class="text-lg-bold">{{ item.book.name }}</div>
+                <div class="text-muted" style="margin-top: 6px">{{ item.book.author }}</div>
               </div>
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+              <div class="flex-between-wrap-sm">
                 <el-input-number :model-value="item.quantity" :min="1" :max="item.book.stock || 1" @change="(val) => changeQuantity(item, Number(val))" />
-                <span class="price-text" style="font-size: 22px">{{ formatMoney(item.subtotal) }}</span>
+                <span class="price-text price-sm">{{ formatMoney(item.subtotal) }}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; align-items: center">
-                <span style="color: var(--text-secondary)">库存 {{ item.book.stock }}</span>
+              <div class="flex-between">
+                <span class="text-muted">库存 {{ item.book.stock }}</span>
                 <el-button text type="danger" @click="removeItem(item)">删除</el-button>
               </div>
             </div>
@@ -107,7 +107,7 @@ onMounted(loadCart);
           <div class="info-row"><span>应付金额</span><strong>{{ formatMoney(totalAmount) }}</strong></div>
         </div>
         <el-divider />
-        <el-button type="primary" size="large" round style="width: 100%" :disabled="!items.length" @click="dialogVisible = true">提交订单</el-button>
+        <el-button type="primary" size="large" round class="w-full" :disabled="!items.length" @click="dialogVisible = true">提交订单</el-button>
       </SectionCard>
     </div>
 

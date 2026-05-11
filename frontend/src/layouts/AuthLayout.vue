@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 defineProps<{
   title: string;
   description: string;
@@ -15,8 +15,8 @@ defineProps<{
           <h1 style="margin: 22px 0 0; font-size: 42px; line-height: 1.15">{{ title }}</h1>
           <p style="margin: 18px 0 0; line-height: 1.8; color: rgba(255,255,255,0.82)">{{ description }}</p>
         </div>
-        <div class="section-card" style="padding: 22px; background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.16); color: #fff">
-          <div style="display: grid; gap: 14px">
+        <div class="section-card hero-feature-card">
+          <div class="grid-stack-sm" style="gap: 14px">
             <div>统一对接图书、分类、购物车、订单与后台运营接口</div>
             <div>内置现代化导航、表单反馈、空态与状态提示</div>
             <div>基于 Vue 3 + TypeScript + Element Plus 构建</div>

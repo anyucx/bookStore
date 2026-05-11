@@ -29,17 +29,17 @@ async function submit() {
 
 <template>
   <AuthLayout title="书城后台运营中心" description="覆盖仪表盘、分类管理、图书管理、订单管理与用户管理。" badge="Admin Portal">
-    <div style="display: grid; gap: 20px">
+    <div class="auth-form-gap">
       <div>
         <el-button text @click="router.push('/')">返回商城首页</el-button>
-        <h2 style="margin: 8px 0 0; font-size: 30px">后台登录</h2>
+        <h2 class="auth-title">后台登录</h2>
         <p class="page-desc">管理员账号将通过 /api/admin/auth/login 验证身份。</p>
       </div>
 
       <el-form label-position="top">
         <el-form-item label="管理员用户名"><el-input v-model="form.username" placeholder="请输入管理员用户名" /></el-form-item>
         <el-form-item label="密码"><el-input v-model="form.password" show-password placeholder="请输入密码" /></el-form-item>
-        <el-button type="primary" round size="large" style="width: 100%" :loading="loading" @click="submit">进入后台</el-button>
+        <el-button type="primary" round size="large" class="w-full" :loading="loading" @click="submit">进入后台</el-button>
       </el-form>
     </div>
   </AuthLayout>

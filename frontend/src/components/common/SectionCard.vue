@@ -6,11 +6,11 @@ defineProps<{
 </script>
 
 <template>
-  <section class="section-card" style="padding: 24px">
-    <div style="display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 20px">
+  <section class="section-card section-card-padded">
+    <div class="section-header">
       <div>
-        <h3 style="margin: 0; font-size: 20px">{{ title }}</h3>
-        <p v-if="description" style="margin: 8px 0 0; color: var(--text-secondary)">{{ description }}</p>
+        <h3 class="section-title">{{ title }}</h3>
+        <p v-if="description" class="section-desc">{{ description }}</p>
       </div>
       <slot name="extra" />
     </div>

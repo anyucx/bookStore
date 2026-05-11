@@ -1,10 +1,11 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 
 import { adminApi } from '@/api/admin';
 import PageHeader from '@/components/common/PageHeader.vue';
 import SectionCard from '@/components/common/SectionCard.vue';
+import StatusTag from '@/components/common/StatusTag.vue';
 import type { CategoryTreeNode } from '@/types';
 import { flattenCategories } from '@/utils/format';
 
@@ -72,7 +73,7 @@ onMounted(loadData);
 </script>
 
 <template>
-  <div style="display: grid; gap: 20px">
+  <div class="admin-page-gap">
     <PageHeader title="分类管理" description="树形分类列表与新增、编辑、删除操作。" extra="Category Management">
       <template #actions>
         <el-button type="primary" round @click="openDialog()">新增分类</el-button>
@@ -89,7 +90,7 @@ onMounted(loadData);
         <el-table-column prop="sort" label="排序" width="100" />
         <el-table-column label="状态" width="120">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'" round>{{ scope.row.status === 1 ? '启用' : '停用' }}</el-tag>
+            <StatusTag kind="category" :status="scope.row.status" />
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180" fixed="right">
@@ -104,13 +105,13 @@ onMounted(loadData);
     <el-dialog v-model="dialogVisible" :title="form.id ? '编辑分类' : '新增分类'" width="520px">
       <el-form label-position="top">
         <el-form-item label="父分类">
-          <el-select v-model="form.parentId" style="width: 100%">
+          <el-select v-model="form.parentId" class="w-full">
             <el-option :value="0" label="顶级分类" />
             <el-option v-for="item in flatCategories" :key="item.id" :value="item.id" :label="`${'　'.repeat(item.level)}${item.name}`" />
           </el-select>
         </el-form-item>
         <el-form-item label="分类名称"><el-input v-model="form.name" placeholder="请输入分类名称" /></el-form-item>
-        <el-form-item label="排序"><el-input-number v-model="form.sort" :min="0" style="width: 100%" /></el-form-item>
+        <el-form-item label="排序"><el-input-number v-model="form.sort" :min="0" class="w-full" /></el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">
             <el-radio :value="1">启用</el-radio>

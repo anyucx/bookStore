@@ -6,6 +6,7 @@ import type { UploadProps } from 'element-plus';
 import { adminApi } from '@/api/admin';
 import PageHeader from '@/components/common/PageHeader.vue';
 import SectionCard from '@/components/common/SectionCard.vue';
+import StatusTag from '@/components/common/StatusTag.vue';
 import type { BookSummary, CategoryTreeNode } from '@/types';
 import { flattenCategories, formatMoney } from '@/utils/format';
 
@@ -115,7 +116,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div style="display: grid; gap: 20px">
+  <div class="admin-page-gap">
     <PageHeader title="图书管理" description="分页管理图书信息，并支持后台封面上传。" extra="Book Management">
       <template #actions>
         <el-button type="primary" round @click="openDialog()">新增图书</el-button>
@@ -123,14 +124,14 @@ onMounted(async () => {
     </PageHeader>
 
     <SectionCard title="图书列表" description="覆盖 /api/admin/books 与 /api/admin/files/upload。">
-      <div class="toolbar-row" style="margin-bottom: 18px">
-        <div style="display: flex; gap: 12px; flex-wrap: wrap">
+      <div class="toolbar-row toolbar-mb">
+        <div class="flex-row-wrap-sm">
           <el-input v-model="query.keyword" placeholder="搜索书名 / 作者 / ISBN" clearable style="width: 280px" />
           <el-select v-model="query.categoryId" placeholder="全部分类" clearable style="width: 220px">
             <el-option v-for="item in flatCategories" :key="item.id" :value="item.id" :label="`${'　'.repeat(item.level)}${item.name}`" />
           </el-select>
         </div>
-        <div style="display: flex; gap: 12px">
+        <div class="flex-row-sm">
           <el-button round @click="query.pageNo = 1; loadBooks()">筛选</el-button>
           <el-button round @click="query.keyword = ''; query.categoryId = undefined; query.pageNo = 1; loadBooks()">重置</el-button>
         </div>
@@ -139,7 +140,7 @@ onMounted(async () => {
       <el-table :data="books" stripe v-loading="loading">
         <el-table-column label="封面" width="96">
           <template #default="scope">
-            <div class="cover-placeholder" style="width: 52px; height: 68px; border-radius: 12px; overflow: hidden">
+            <div class="cover-placeholder cover-thumb">
               <img v-if="scope.row.coverUrl" :src="scope.row.coverUrl" :alt="scope.row.name" style="width: 100%; height: 100%; object-fit: cover" />
               <span>图</span>
             </div>
@@ -151,7 +152,7 @@ onMounted(async () => {
         <el-table-column label="价格" width="120"><template #default="scope">{{ formatMoney(scope.row.price) }}</template></el-table-column>
         <el-table-column prop="stock" label="库存" width="100" />
         <el-table-column label="状态" width="100">
-          <template #default="scope"><el-tag :type="scope.row.status === 1 ? 'success' : 'info'" round>{{ scope.row.status === 1 ? '上架' : '下架' }}</el-tag></template>
+          <template #default="scope"><StatusTag kind="book" :status="scope.row.status" /></template>
         </el-table-column>
         <el-table-column label="操作" width="180" fixed="right">
           <template #default="scope">
@@ -161,24 +162,24 @@ onMounted(async () => {
         </el-table-column>
       </el-table>
 
-      <div style="display: flex; justify-content: flex-end; margin-top: 18px">
+      <div class="pagination-mt">
         <el-pagination v-model:current-page="query.pageNo" v-model:page-size="query.pageSize" layout="prev, pager, next" :total="total" @current-change="loadBooks" />
       </div>
     </SectionCard>
 
     <el-dialog v-model="dialogVisible" :title="form.id ? '编辑图书' : '新增图书'" width="720px">
       <el-form label-position="top">
-        <div class="responsive-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr))">
+        <div class="responsive-grid form-two-col">
           <el-form-item label="图书名称"><el-input v-model="form.name" /></el-form-item>
           <el-form-item label="作者"><el-input v-model="form.author" /></el-form-item>
           <el-form-item label="分类">
-            <el-select v-model="form.categoryId" style="width: 100%" placeholder="请选择分类">
+            <el-select v-model="form.categoryId" class="w-full" placeholder="请选择分类">
               <el-option v-for="item in flatCategories" :key="item.id" :value="item.id" :label="`${'　'.repeat(item.level)}${item.name}`" />
             </el-select>
           </el-form-item>
           <el-form-item label="ISBN"><el-input v-model="form.isbn" /></el-form-item>
-          <el-form-item label="价格"><el-input-number v-model="form.price" :min="0" :precision="2" style="width: 100%" /></el-form-item>
-          <el-form-item label="库存"><el-input-number v-model="form.stock" :min="0" style="width: 100%" /></el-form-item>
+          <el-form-item label="价格"><el-input-number v-model="form.price" :min="0" :precision="2" class="w-full" /></el-form-item>
+          <el-form-item label="库存"><el-input-number v-model="form.stock" :min="0" class="w-full" /></el-form-item>
         </div>
         <el-form-item label="封面地址"><el-input v-model="form.coverUrl" placeholder="可手动填写或上传文件" /></el-form-item>
         <el-upload :show-file-list="false" :http-request="handleUpload">
