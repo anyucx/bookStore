@@ -1,4 +1,4 @@
-﻿package com.bookstore.service;
+package com.bookstore.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bookstore.common.BusinessException;
