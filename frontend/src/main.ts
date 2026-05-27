@@ -20,7 +20,6 @@ Object.entries(ElementPlusIconsVue).forEach(([key, component]) => {
   app.component(key, component);
 });
 
-const authStore = useAuthStore();
-authStore.bootstrap().finally(() => {
-  app.mount('#app');
-});
+app.mount('#app');
+
+useAuthStore().bootstrap();

@@ -46,10 +46,8 @@ const router = createRouter({
       redirect: '/',
     },
   ],
-  scrollBehavior () {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve({ top: 0, behavior: 'smooth' }), 0);
-    });
+  scrollBehavior() {
+    return { top: 0 };
   },
 });
 
