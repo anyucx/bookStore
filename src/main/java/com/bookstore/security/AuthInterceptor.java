@@ -39,10 +39,10 @@ public class AuthInterceptor implements HandlerInterceptor {
             throw new BusinessException(401, "登录态已失效");
         }
         SecuritySupport.LoginUser user = objectMapper.convertValue(cache, SecuritySupport.LoginUser.class);
-        if (user == null || user.userId == null) {
+        if (user == null || user.getUserId() == null) {
             throw new BusinessException(401, "登录态无效");
         }
-        if (uri.startsWith("/api/admin/") && !"/api/admin/auth/login".equals(uri) && !"ADMIN".equalsIgnoreCase(user.roleCode)) {
+        if (uri.startsWith("/api/admin/") && !"/api/admin/auth/login".equals(uri) && !"ADMIN".equalsIgnoreCase(user.getRoleCode())) {
             throw new BusinessException(403, "无管理员权限");
         }
         SecuritySupport.set(user);
@@ -71,7 +71,6 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (StringUtils.hasText(v)) {
             return v.trim();
         }
-        v = request.getParameter("token");
-        return StringUtils.hasText(v) ? v.trim() : null;
+        return null;
     }
 }

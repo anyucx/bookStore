@@ -1,9 +1,10 @@
 package com.bookstore.security;
 
 import com.bookstore.common.BusinessException;
+import lombok.Data;
 
 public final class SecuritySupport {
-    private static final ThreadLocal<LoginUser> HOLDER = new ThreadLocal<LoginUser>();
+    private static final ThreadLocal<LoginUser> HOLDER = new ThreadLocal<>();
 
     private SecuritySupport() {
     }
@@ -14,7 +15,7 @@ public final class SecuritySupport {
 
     public static LoginUser current() {
         LoginUser user = HOLDER.get();
-        if (user == null || user.userId == null) {
+        if (user == null || user.getUserId() == null) {
             throw new BusinessException(401, "未登录");
         }
         return user;
@@ -24,10 +25,11 @@ public final class SecuritySupport {
         HOLDER.remove();
     }
 
+    @Data
     public static class LoginUser {
-        public Long userId;
-        public String username;
-        public String displayName;
-        public String roleCode;
+        private Long userId;
+        private String username;
+        private String displayName;
+        private String roleCode;
     }
 }

@@ -1,21 +1,36 @@
 package com.bookstore.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import java.time.LocalDateTime;
 
+@Data
+@Accessors(chain = true)
 @TableName("file_resources")
 public class FileResource {
-    @TableId(type = IdType.INPUT) public Long id;
-    @TableField("business_type") public String businessType;
-    @TableField("original_name") public String originalName;
-    @TableField("stored_name") public String storedName;
-    @TableField("storage_path") public String storagePath;
-    @TableField("access_url") public String accessUrl;
-    @TableField("content_type") public String contentType;
-    @TableField("size_bytes") public Long sizeBytes;
-    @TableField("uploader_id") public Long uploaderId;
-    @TableField("created_time") public LocalDateTime createdTime;
+    @TableId(type = IdType.INPUT)
+    private Long id;
+    @TableField("business_type")
+    private String businessType;
+    @TableField("original_name")
+    private String originalName;
+    @TableField("stored_name")
+    private String storedName;
+    @TableField("storage_path")
+    private String storagePath;
+    @TableField("access_url")
+    private String accessUrl;
+    @TableField("content_type")
+    private String contentType;
+    @TableField("size_bytes")
+    private Long sizeBytes;
+    @TableField("uploader_id")
+    private Long uploaderId;
+    @TableField("created_time")
+    private LocalDateTime createdTime;
+    @TableLogic
+    @TableField("deleted")
+    private Integer deleted;
 }

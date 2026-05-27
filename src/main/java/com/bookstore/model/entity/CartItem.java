@@ -1,18 +1,28 @@
 package com.bookstore.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import java.time.LocalDateTime;
 
+@Data
+@Accessors(chain = true)
 @TableName("cart_items")
 public class CartItem {
-    @TableId(type = IdType.INPUT) public Long id;
-    @TableField("user_id") public Long userId;
-    @TableField("book_id") public Long bookId;
-    public Integer quantity;
-    public Integer selected;
-    @TableField("created_time") public LocalDateTime createdTime;
-    @TableField("updated_time") public LocalDateTime updatedTime;
+    @TableId(type = IdType.INPUT)
+    private Long id;
+    @TableField("user_id")
+    private Long userId;
+    @TableField("book_id")
+    private Long bookId;
+    private Integer quantity;
+    private Integer selected;
+    @TableField("created_time")
+    private LocalDateTime createdTime;
+    @TableField("updated_time")
+    private LocalDateTime updatedTime;
+    @TableLogic
+    @TableField("deleted")
+    private Integer deleted;
 }

@@ -17,7 +17,8 @@ public final class AppUtils {
     }
 
     public static synchronized long nextId() {
-        return System.currentTimeMillis() * 1000 + COUNTER.getAndIncrement() % 1000;
+        long seq = COUNTER.incrementAndGet() & 0xFFFF;
+        return (System.currentTimeMillis() << 16) | seq;
     }
 
     public static String nextOrderNo() {

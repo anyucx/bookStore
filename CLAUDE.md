@@ -23,6 +23,20 @@ There are no automated tests in this project. `mvn package` skips tests by defau
 
 **Spring Boot 2.7 + Vue 3 SPA** with MySQL + Redis, single-module Maven project.
 
+### Controllers (split by domain)
+
+```
+AuthController       /api/auth/*, /api/admin/auth/login
+CatalogController    /api/categories/tree, /api/books
+TradeController      /api/cart/items, /api/orders, /api/payments
+DashboardController  /api/admin/dashboard
+CategoryAdminController  /api/admin/categories
+BookAdminController      /api/admin/books
+OrderAdminController     /api/admin/orders
+UserAdminController      /api/admin/users
+FileUploadController     /api/admin/files/upload
+```
+
 ### Critical: Dual static resource serving
 
 Static resources are served from TWO locations simultaneously (configured in `AppConfig.java:77-104`):
@@ -47,23 +61,28 @@ Browser → /uploads/** → LocalFileStorageService → filesystem
 ### Auth
 
 - `AuthInterceptor` intercepts `/api/**` (registered in `AppConfig.addInterceptors`)
+- Token only accepted via `Authorization: Bearer <token>` header (query param removed)
 - Token stored in Redis with prefix `bookstore:token:`, TTL 7 days
-- Frontend stores token + user in `sessionStorage` (see `frontend/src/utils/storage.ts`)
+- Frontend stores token + user in `localStorage` (see `frontend/src/utils/storage.ts`)
 - Vue Router `beforeEach` guard checks `authStore.isAuthenticated` and `authStore.isAdmin`
 
 ### Key backend conventions
 
 - `ApiResponse<T>` is the universal response wrapper: `{ success, code, message, data, timestamp }`
 - `BusinessException` (status code + message) is caught by `GlobalExceptionHandler`
-- IDs generated via `AppUtils.nextId()` (likely Snowflake-style)
-- `@Log` annotation on controller methods records to `operation_logs` table (see `LogAspect`)
-- Service layer uses manual `QueryWrapper` construction, not MyBatis-Plus auto CRUD
+- All request DTOs under `dto/request/` use `@Valid` for parameter validation
+- IDs generated via `AppUtils.nextId()` (timestamp + sequence, no collision across restarts)
+- `@Log` annotation on controller methods records to `operation_logs` table; only methods with `@Log` are recorded (GET requests excluded unless annotated)
+- Sensitive fields (password, token) are masked in operation logs
+- Entities use Lombok `@Data` with `@Accessors(chain = true)`; all fields private
+- Logical delete (`@TableLogic`) configured on entities with `deleted` column
+- Service layer uses manual `QueryWrapper` construction
 
 ### Key frontend conventions
 
 - Vue 3 Composition API (`<script setup lang="ts">`) throughout
 - Pinia store (`useAuthStore`) manages auth state; calls `bootstrap()` before `app.mount()`
-- Axios instance (`http.ts`) auto-attaches `Authorization: Bearer <token>`, handles 401/403 by clearing session and redirecting to login
+- Axios instance (`http.ts`) auto-attaches `Authorization: Bearer <token>`, handles 401/403 by clearing session and redirecting to login (no duplicate error message)
 - All API responses are typed as `ApiResponse<T>`; `unwrap()` helper extracts `.data`
 - Route-based code splitting: all views are `() => import(...)`
 

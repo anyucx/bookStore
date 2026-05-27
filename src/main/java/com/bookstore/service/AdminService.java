@@ -1,14 +1,9 @@
 package com.bookstore.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.bookstore.mapper.BookMapper;
-import com.bookstore.mapper.BookOrderMapper;
-import com.bookstore.mapper.CategoryMapper;
-import com.bookstore.mapper.FileResourceMapper;
-import com.bookstore.mapper.PaymentRecordMapper;
-import com.bookstore.mapper.UserMapper;
-import com.bookstore.model.entity.BookOrder;
-import com.bookstore.model.entity.FileResource;
+import com.bookstore.mapper.*;
+import com.bookstore.model.entity.*;
+import com.bookstore.security.SecuritySupport;
 import com.bookstore.storage.FileStorageService;
 import com.bookstore.storage.StoredFile;
 import com.bookstore.util.AppUtils;
@@ -33,41 +28,52 @@ public class AdminService {
     @Resource private PaymentRecordMapper paymentRecordMapper;
     @Resource private FileResourceMapper fileResourceMapper;
     @Resource private FileStorageService fileStorageService;
-    @Resource private AuthService authService;
 
-    /** 管理端看板。 */
     public Map<String, Object> dashboard() {
-        Map<String, Object> m = new HashMap<String, Object>();
-        m.put("userCount", userMapper.selectCount(new QueryWrapper<com.bookstore.model.entity.User>()));
-        m.put("categoryCount", categoryMapper.selectCount(new QueryWrapper<com.bookstore.model.entity.Category>()));
-        m.put("bookCount", bookMapper.selectCount(new QueryWrapper<com.bookstore.model.entity.Book>()));
-        m.put("orderCount", orderMapper.selectCount(new QueryWrapper<BookOrder>()));
-        m.put("paymentCount", paymentRecordMapper.selectCount(new QueryWrapper<com.bookstore.model.entity.PaymentRecord>()));
-        List<BookOrder> orders = orderMapper.selectList(new QueryWrapper<BookOrder>());
+        Map<String, Object> m = new HashMap<>();
+        Object[] results = new Object[]{
+                userMapper.selectCount(new QueryWrapper<User>()),
+                categoryMapper.selectCount(new QueryWrapper<Category>()),
+                bookMapper.selectCount(new QueryWrapper<Book>()),
+                orderMapper.selectCount(new QueryWrapper<BookOrder>()),
+                paymentRecordMapper.selectCount(new QueryWrapper<PaymentRecord>())
+        };
+        m.put("userCount", results[0]);
+        m.put("categoryCount", results[1]);
+        m.put("bookCount", results[2]);
+        m.put("orderCount", results[3]);
+        m.put("paymentCount", results[4]);
+
+        List<BookOrder> orders = orderMapper.selectList(
+                new QueryWrapper<BookOrder>().select("IFNULL(SUM(total_amount),0) as total_amount"));
         BigDecimal total = BigDecimal.ZERO;
-        for (BookOrder o : orders) if (o.totalAmount != null) total = total.add(o.totalAmount);
+        for (BookOrder o : orders) {
+            if (o.getTotalAmount() != null) total = total.add(o.getTotalAmount());
+        }
         m.put("totalSales", total);
         return m;
     }
 
-    /** 上传文件。 */
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> upload(MultipartFile file) throws IOException {
         StoredFile sf = fileStorageService.store(file);
         FileResource fr = new FileResource();
-        fr.id = AppUtils.nextId();
-        fr.businessType = "COMMON";
-        fr.originalName = sf.originalName;
-        fr.storedName = sf.storedName;
-        fr.storagePath = sf.relativePath;
-        fr.accessUrl = sf.accessUrl;
-        fr.contentType = sf.contentType;
-        fr.sizeBytes = sf.size;
-        fr.uploaderId = authService.currentUser().id;
-        fr.createdTime = LocalDateTime.now();
+        fr.setId(AppUtils.nextId());
+        fr.setBusinessType("COMMON");
+        fr.setOriginalName(sf.getOriginalName());
+        fr.setStoredName(sf.getStoredName());
+        fr.setStoragePath(sf.getRelativePath());
+        fr.setAccessUrl(sf.getAccessUrl());
+        fr.setContentType(sf.getContentType());
+        fr.setSizeBytes(sf.getSize());
+        fr.setUploaderId(SecuritySupport.current().getUserId());
+        fr.setCreatedTime(LocalDateTime.now());
         fileResourceMapper.insert(fr);
-        Map<String, Object> m = new HashMap<String, Object>();
-        m.put("id", fr.id); m.put("originalName", fr.originalName); m.put("accessUrl", fr.accessUrl); m.put("sizeBytes", fr.sizeBytes);
+        Map<String, Object> m = new HashMap<>();
+        m.put("id", fr.getId());
+        m.put("originalName", fr.getOriginalName());
+        m.put("accessUrl", fr.getAccessUrl());
+        m.put("sizeBytes", fr.getSizeBytes());
         return m;
     }
 }

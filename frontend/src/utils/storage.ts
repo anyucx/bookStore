@@ -2,34 +2,36 @@
 const USER_KEY = 'bookstore:user';
 
 export function getToken() {
-  return sessionStorage.getItem(TOKEN_KEY) || '';
+  return localStorage.getItem(TOKEN_KEY) || '';
 }
 
 export function setToken(token: string) {
-  sessionStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(TOKEN_KEY, token);
 }
 
 export function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
   sessionStorage.removeItem(TOKEN_KEY);
 }
 
 export function getStoredUser() {
-  const raw = sessionStorage.getItem(USER_KEY);
+  const raw = localStorage.getItem(USER_KEY);
   if (!raw) {
     return null;
   }
   try {
     return JSON.parse(raw);
   } catch {
-    sessionStorage.removeItem(USER_KEY);
+    localStorage.removeItem(USER_KEY);
     return null;
   }
 }
 
 export function setStoredUser(user: unknown) {
-  sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
 export function clearStoredUser() {
+  localStorage.removeItem(USER_KEY);
   sessionStorage.removeItem(USER_KEY);
 }

@@ -38,10 +38,8 @@ public class LogAspect {
         if (attributes == null) {
             return joinPoint.proceed();
         }
-        HttpServletRequest request = attributes.getRequest();
         Log logAnnotation = resolveLogAnnotation(joinPoint);
-        boolean shouldRecord = logAnnotation != null || "GET".equalsIgnoreCase(request.getMethod());
-        if (!shouldRecord) {
+        if (logAnnotation == null) {
             return joinPoint.proceed();
         }
         LocalDateTime startTime = LocalDateTime.now();
@@ -94,42 +92,43 @@ public class LogAspect {
             HttpServletRequest request = attributes.getRequest();
 
             OperationLog opLog = new OperationLog();
-            opLog.id = AppUtils.nextId();
-            opLog.startTime = startTime;
-            opLog.endTime = endTime;
-            opLog.durationMs = duration;
-            opLog.path = request.getRequestURI();
-            opLog.method = request.getMethod() + " " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName();
-            opLog.ip = getClientIp(request);
+            opLog.setId(AppUtils.nextId());
+            opLog.setStartTime(startTime);
+            opLog.setEndTime(endTime);
+            opLog.setDurationMs(duration);
+            opLog.setPath(request.getRequestURI());
+            opLog.setMethod(request.getMethod() + " " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+            opLog.setIp(getClientIp(request));
 
             // 获取当前用户 (不抛异常，可能未登录)
             try {
                 SecuritySupport.LoginUser user = SecuritySupport.current();
                 if (user != null) {
-                    opLog.userId = user.userId;
-                    opLog.username = user.username;
+                    opLog.setUserId(user.getUserId());
+                    opLog.setUsername(user.getUsername());
                 }
             } catch (Exception ignored) {
             }
 
-            // 参数序列化
+            // 参数序列化（敏感字段脱敏）
             Object[] args = joinPoint.getArgs();
             if (args != null && args.length > 0) {
                 try {
-                    opLog.params = objectMapper.writeValueAsString(args);
+                    String raw = objectMapper.writeValueAsString(args);
+                    opLog.setParams(maskSensitive(raw));
                 } catch (Exception e) {
-                    opLog.params = "[Serialization Error]";
+                    opLog.setParams("[Serialization Error]");
                 }
             }
 
             // 结果序列化
             if (throwable != null) {
-                opLog.result = "Exception: " + throwable.getMessage();
+                opLog.setResult("Exception: " + throwable.getMessage());
             } else if (result != null) {
                 try {
-                    opLog.result = objectMapper.writeValueAsString(result);
+                    opLog.setResult(objectMapper.writeValueAsString(result));
                 } catch (Exception e) {
-                    opLog.result = "[Serialization Error]";
+                    opLog.setResult("[Serialization Error]");
                 }
             }
 
@@ -151,5 +150,18 @@ public class LogAspect {
             ip = request.getRemoteAddr();
         }
         return ip;
+    }
+
+    private static final String[] SENSITIVE_KEYS = {"password", "confirmPassword", "passwordHash", "token", "Authorization"};
+
+    private String maskSensitive(String json) {
+        if (json == null || json.length() > 10000) {
+            return json;
+        }
+        String result = json;
+        for (String key : SENSITIVE_KEYS) {
+            result = result.replaceAll("(?i)\"" + key + "\"\\s*:\\s*\"[^\"]*\"", "\"" + key + "\":\"***\"");
+        }
+        return result;
     }
 }

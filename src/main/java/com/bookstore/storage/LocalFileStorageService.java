@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,13 +33,14 @@ public class LocalFileStorageService implements FileStorageService {
         Files.createDirectories(dir);
         Path target = dir.resolve(stored);
         file.transferTo(target.toFile());
-        StoredFile f = new StoredFile();
-        f.originalName = name;
-        f.storedName = stored;
-        f.relativePath = folder + "/" + stored;
-        f.accessUrl = (urlPrefix.endsWith("/") ? urlPrefix : urlPrefix + "/") + f.relativePath.replace(File.separatorChar, '/');
-        f.contentType = file.getContentType();
-        f.size = file.getSize();
+        StoredFile f = new StoredFile()
+                .setOriginalName(name)
+                .setStoredName(stored)
+                .setRelativePath(folder + "/" + stored)
+                .setAccessUrl((urlPrefix.endsWith("/") ? urlPrefix : urlPrefix + "/") +
+                        (folder + "/" + stored).replace('\\', '/'))
+                .setContentType(file.getContentType())
+                .setSize(file.getSize());
         return f;
     }
 }

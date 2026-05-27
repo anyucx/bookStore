@@ -1,20 +1,31 @@
 package com.bookstore.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import java.math.BigDecimal;
 
+@Data
+@Accessors(chain = true)
 @TableName("order_items")
 public class OrderItem {
-    @TableId(type = IdType.INPUT) public Long id;
-    @TableField("order_id") public Long orderId;
-    @TableField("book_id") public Long bookId;
-    @TableField("book_name") public String bookName;
-    @TableField("book_author") public String bookAuthor;
-    @TableField("cover_url") public String coverUrl;
-    public Integer quantity;
-    public BigDecimal price;
-    public BigDecimal amount;
+    @TableId(type = IdType.INPUT)
+    private Long id;
+    @TableField("order_id")
+    private Long orderId;
+    @TableField("book_id")
+    private Long bookId;
+    @TableField("book_name")
+    private String bookName;
+    @TableField("book_author")
+    private String bookAuthor;
+    @TableField("cover_url")
+    private String coverUrl;
+    private Integer quantity;
+    private BigDecimal price;
+    private BigDecimal amount;
 }

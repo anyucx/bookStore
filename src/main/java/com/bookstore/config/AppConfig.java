@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.bookstore.security.AuthInterceptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -43,10 +45,11 @@ public class AppConfig implements WebMvcConfigurer {
     private String frontendIndexFile;
 
     @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        return mapper;
+    public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+        return builder
+                .modules(new JavaTimeModule())
+                .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .build();
     }
 
     @Bean

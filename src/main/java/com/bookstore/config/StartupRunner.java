@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.awt.*;
-import java.net.URI;
-
 @Component
 public class StartupRunner implements CommandLineRunner {
 
@@ -21,7 +18,7 @@ public class StartupRunner implements CommandLineRunner {
     private String contextPath;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         String baseUrl = "http://localhost:" + port + contextPath;
         if (!baseUrl.endsWith("/")) {
             baseUrl += "/";
@@ -35,21 +32,5 @@ public class StartupRunner implements CommandLineRunner {
         log.info("管理员账号: admin");
         log.info("管理员密码: 123456");
         log.info("====================================================================");
-
-        // 自动打开浏览器首页
-       /* try {
-            String os = System.getProperty("os.name").toLowerCase();
-            if (os.contains("win")) {
-                // Windows 环境下优先尝试 cmd /c start，因为它更可靠地处理默认浏览器
-                Runtime.getRuntime().exec("cmd /c start " + baseUrl);
-            } else if (Desktop.isDesktopSupported()) {
-                Desktop desktop = Desktop.getDesktop();
-                if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                    desktop.browse(new URI(baseUrl));
-                }
-            }
-        } catch (Exception e) {
-            log.warn("无法自动打开浏览器，请手动访问: {}", baseUrl);
-        }*/
     }
 }

@@ -2,6 +2,9 @@ package com.bookstore.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bookstore.common.BusinessException;
+import com.bookstore.dto.request.LoginRequest;
+import com.bookstore.dto.request.RegisterRequest;
+import com.bookstore.dto.request.UserUpdateRequest;
 import com.bookstore.mapper.RoleMapper;
 import com.bookstore.mapper.UserMapper;
 import com.bookstore.model.entity.Role;
@@ -31,95 +34,75 @@ public class AuthService {
     @Value("${bookstore.auth.token-prefix:bookstore:token:}") private String tokenPrefix;
     @Value("${bookstore.auth.token-ttl-days:7}") private long ttlDays;
 
-    /** 用户注册。 */
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> register(Map<String, Object> body) {
-        String username = AppUtils.str(body, "username");
-        String password = AppUtils.str(body, "password");
-        String confirmPassword = AppUtils.str(body, "confirmPassword");
-        String displayName = AppUtils.str(body, "displayName");
-        if (!StringUtils.hasText(username) || !StringUtils.hasText(password) || !StringUtils.hasText(displayName)) {
-            throw new BusinessException(400, "用户名、密码、昵称不能为空");
-        }
-        if (!password.equals(confirmPassword)) throw new BusinessException(400, "两次密码不一致");
-        if (userMapper.selectOne(new QueryWrapper<User>().eq("username", username).last("limit 1")) != null) {
+    public Map<String, Object> register(RegisterRequest req) {
+        if (!req.getPassword().equals(req.getConfirmPassword())) throw new BusinessException(400, "两次密码不一致");
+        if (userMapper.selectOne(new QueryWrapper<User>().eq("username", req.getUsername()).last("limit 1")) != null) {
             throw new BusinessException(400, "用户名已存在");
         }
         Role role = roleMapper.selectOne(new QueryWrapper<Role>().eq("code", "CUSTOMER").last("limit 1"));
         if (role == null) throw new BusinessException(500, "缺少 CUSTOMER 角色");
         LocalDateTime now = LocalDateTime.now();
-        User user = new User();
-        user.id = AppUtils.nextId();
-        user.username = username;
-        user.passwordHash = AppUtils.sha256(password);
-        user.displayName = displayName;
-        user.phone = AppUtils.str(body, "phone");
-        user.email = AppUtils.str(body, "email");
-        user.roleId = role.id;
-        user.status = 1;
-        user.createdTime = now;
-        user.updatedTime = now;
+        User user = new User()
+                .setId(AppUtils.nextId())
+                .setUsername(req.getUsername())
+                .setPasswordHash(AppUtils.sha256(req.getPassword()))
+                .setDisplayName(req.getDisplayName())
+                .setPhone(req.getPhone())
+                .setEmail(req.getEmail())
+                .setRoleId(role.getId())
+                .setStatus(1)
+                .setCreatedTime(now)
+                .setUpdatedTime(now);
         userMapper.insert(user);
         return loginResult(user, role);
     }
 
-    /** 用户或管理员登录。 */
-    public Map<String, Object> login(Map<String, Object> body, boolean adminLogin) {
-        String username = AppUtils.str(body, "username");
-        String password = AppUtils.str(body, "password");
-        User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", username).last("limit 1"));
-        if (user == null || !AppUtils.passwordMatch(password, user.passwordHash)) throw new BusinessException(400, "用户名或密码错误");
-        if (user.status == null || user.status != 1) throw new BusinessException(403, "账号已禁用");
-        Role role = role(user.roleId);
-        if (adminLogin && !"ADMIN".equalsIgnoreCase(role.code)) throw new BusinessException(403, "当前账号不是管理员");
+    public Map<String, Object> login(LoginRequest req, boolean adminLogin) {
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", req.getUsername()).last("limit 1"));
+        if (user == null || !AppUtils.passwordMatch(req.getPassword(), user.getPasswordHash())) throw new BusinessException(400, "用户名或密码错误");
+        if (user.getStatus() == null || user.getStatus() != 1) throw new BusinessException(403, "账号已禁用");
+        Role role = role(user.getRoleId());
+        if (adminLogin && !"ADMIN".equalsIgnoreCase(role.getCode())) throw new BusinessException(403, "当前账号不是管理员");
         return loginResult(user, role);
     }
 
-    /** 退出登录。 */
     public void logout(String token) {
         if (StringUtils.hasText(token)) redisCacheUtil.deleteObject(tokenPrefix + token);
     }
 
-    /** 当前登录用户信息。 */
     public Map<String, Object> me() {
         User user = currentUser();
-        return userMap(user, role(user.roleId));
+        return userMap(user, role(user.getRoleId()));
     }
 
-    /** 当前登录用户实体。 */
     public User currentUser() {
         SecuritySupport.LoginUser login = SecuritySupport.current();
-        User user = userMapper.selectById(login.userId);
+        User user = userMapper.selectById(login.getUserId());
         if (user == null) throw new BusinessException(401, "登录用户不存在");
         return user;
     }
 
-    /** 管理端用户列表。 */
     public List<Map<String, Object>> users(String keyword, Integer status) {
         QueryWrapper<User> qw = new QueryWrapper<User>().orderByDesc("created_time");
         if (status != null) qw.eq("status", status);
         if (StringUtils.hasText(keyword)) qw.and(w -> w.like("username", keyword).or().like("display_name", keyword));
         List<User> users = userMapper.selectList(qw);
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        for (User user : users) list.add(userMap(user, role(user.roleId)));
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (User user : users) list.add(userMap(user, role(user.getRoleId())));
         return list;
     }
 
-    /** 管理端更新用户。 */
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> updateUser(Map<String, Object> body) {
-        Long userId = AppUtils.lng(body, "userId");
-        User user = userMapper.selectById(userId);
+    public Map<String, Object> updateUser(UserUpdateRequest req) {
+        User user = userMapper.selectById(req.getUserId());
         if (user == null) throw new BusinessException(404, "用户不存在");
-        String displayName = AppUtils.str(body, "displayName");
-        Integer status = AppUtils.integer(body, "status");
-        Long roleId = AppUtils.lng(body, "roleId");
-        if (StringUtils.hasText(displayName)) user.displayName = displayName;
-        if (status != null) user.status = status;
-        if (roleId != null) user.roleId = role(roleId).id;
-        user.updatedTime = LocalDateTime.now();
+        if (req.getDisplayName() != null) user.setDisplayName(req.getDisplayName());
+        if (req.getStatus() != null) user.setStatus(req.getStatus());
+        if (req.getRoleId() != null) user.setRoleId(role(req.getRoleId()).getId());
+        user.setUpdatedTime(LocalDateTime.now());
         userMapper.updateById(user);
-        return userMap(user, role(user.roleId));
+        return userMap(user, role(user.getRoleId()));
     }
 
     private Role role(Long roleId) {
@@ -131,12 +114,12 @@ public class AuthService {
     private Map<String, Object> loginResult(User user, Role role) {
         String token = UUID.randomUUID().toString().replace("-", "");
         SecuritySupport.LoginUser loginUser = new SecuritySupport.LoginUser();
-        loginUser.userId = user.id;
-        loginUser.username = user.username;
-        loginUser.displayName = user.displayName;
-        loginUser.roleCode = role.code;
+        loginUser.setUserId(user.getId());
+        loginUser.setUsername(user.getUsername());
+        loginUser.setDisplayName(user.getDisplayName());
+        loginUser.setRoleCode(role.getCode());
         redisCacheUtil.setCacheObject(tokenPrefix + token, loginUser, ttlDays, TimeUnit.DAYS);
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("token", token);
         map.put("tokenType", "Bearer");
         map.put("expiresInDays", ttlDays);
@@ -145,19 +128,19 @@ public class AuthService {
     }
 
     private Map<String, Object> userMap(User user, Role role) {
-        Map<String, Object> r = new HashMap<String, Object>();
-        r.put("id", user.id);
-        r.put("username", user.username);
-        r.put("displayName", user.displayName);
-        r.put("phone", user.phone);
-        r.put("email", user.email);
-        r.put("status", user.status);
-        Map<String, Object> roleMap = new HashMap<String, Object>();
-        roleMap.put("id", role.id);
-        roleMap.put("name", role.name);
-        roleMap.put("code", role.code);
+        Map<String, Object> r = new HashMap<>();
+        r.put("id", user.getId());
+        r.put("username", user.getUsername());
+        r.put("displayName", user.getDisplayName());
+        r.put("phone", user.getPhone());
+        r.put("email", user.getEmail());
+        r.put("status", user.getStatus());
+        Map<String, Object> roleMap = new HashMap<>();
+        roleMap.put("id", role.getId());
+        roleMap.put("name", role.getName());
+        roleMap.put("code", role.getCode());
         r.put("role", roleMap);
-        r.put("createdTime", user.createdTime);
+        r.put("createdTime", user.getCreatedTime());
         return r;
     }
 }

@@ -31,14 +31,15 @@ http.interceptors.response.use(
   async (error) => {
     const status = error?.response?.status;
     const message = error?.response?.data?.message || error?.message || '网络请求异常';
+    const authStore = useAuthStore();
     if (status === 401 || status === 403) {
-      const authStore = useAuthStore();
       authStore.clearSession();
       const current = router.currentRoute.value;
       const target = current.path.startsWith('/admin') ? '/admin/login' : '/login';
       if (current.path !== target) {
         await router.push({ path: target, query: { redirect: current.fullPath } });
       }
+      return Promise.reject(error);
     }
     ElMessage.error(message);
     return Promise.reject(error);

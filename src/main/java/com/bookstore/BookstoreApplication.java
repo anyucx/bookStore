@@ -18,11 +18,11 @@ public class BookstoreApplication {
     }
 
     private static void buildFrontend() {
-        System.out.println(">>> 正在构建前端包，确保显示最新内容...");
+        System.out.println(">>> Building frontend...");
         try {
             File frontendDir = new File("frontend");
             if (!frontendDir.exists() || !frontendDir.isDirectory()) {
-                System.err.println(">>> 找不到前端目录: " + frontendDir.getAbsolutePath());
+                System.err.println(">>> Frontend directory not found: " + frontendDir.getAbsolutePath());
                 return;
             }
 
@@ -44,13 +44,12 @@ public class BookstoreApplication {
 
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                System.out.println(">>> 前端包构建成功！");
+                System.out.println(">>> Frontend built successfully!");
             } else {
-                System.err.println(">>> 前端包构建失败，退出码：" + exitCode);
+                System.err.println(">>> Frontend build failed, exit code: " + exitCode);
             }
         } catch (Exception e) {
-            System.err.println(">>> 构建前端包时发生错误: " + e.getMessage());
-            // 继续启动应用，避免因前端构建失败导致整个后端无法启动
+            System.err.println(">>> Frontend build error: " + e.getMessage());
         }
     }
 }
