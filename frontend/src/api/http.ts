@@ -23,7 +23,9 @@ http.interceptors.response.use(
   (response) => {
     const data = response.data as ApiResponse<unknown>;
     if (data && data.success === false) {
-      ElMessage.error(data.message || '请求失败');
+      if (!document.hidden) {
+        ElMessage.error(data.message || '请求失败');
+      }
       return Promise.reject(data);
     }
     return response;
@@ -33,15 +35,19 @@ http.interceptors.response.use(
     const message = error?.response?.data?.message || error?.message || '网络请求异常';
     const authStore = useAuthStore();
     if (status === 401 || status === 403) {
-      authStore.clearSession();
-      const current = router.currentRoute.value;
-      const target = current.path.startsWith('/admin') ? '/admin/login' : '/login';
-      if (current.path !== target) {
-        await router.push({ path: target, query: { redirect: current.fullPath } });
+      if (!document.hidden) {
+        authStore.clearSession();
+        const current = router.currentRoute.value;
+        const target = current.path.startsWith('/admin') ? '/admin/login' : '/login';
+        if (current.path !== target) {
+          await router.push({ path: target, query: { redirect: current.fullPath } });
+        }
       }
       return Promise.reject(error);
     }
-    ElMessage.error(message);
+    if (!document.hidden) {
+      ElMessage.error(message);
+    }
     return Promise.reject(error);
   },
 );

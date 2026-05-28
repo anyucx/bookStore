@@ -56,10 +56,18 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     private boolean isPublic(String method, String uri) {
-        return ("POST".equalsIgnoreCase(method) && ("/api/auth/register".equals(uri) || "/api/auth/login".equals(uri)
-                || "/api/admin/auth/login".equals(uri) || "/api/payments/callback".equals(uri)))
-                || ("GET".equalsIgnoreCase(method) && ("/api/categories/tree".equals(uri) || "/api/books".equals(uri)
-                || uri.startsWith("/api/books/")));
+        if ("POST".equalsIgnoreCase(method) && ("/api/auth/register".equals(uri) || "/api/auth/login".equals(uri)
+                || "/api/admin/auth/login".equals(uri) || "/api/payments/callback".equals(uri))) {
+            return true;
+        }
+        if ("GET".equalsIgnoreCase(method) && ("/api/categories/tree".equals(uri) || "/api/books".equals(uri)
+                || uri.startsWith("/api/books/"))) {
+            return true;
+        }
+        if ("/api/logs/frontend".equals(uri)) {
+            return true;
+        }
+        return false;
     }
 
     private String token(HttpServletRequest request) {

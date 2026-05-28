@@ -8,6 +8,9 @@ import App from './App.vue';
 import router from './router';
 import { useAuthStore } from './stores/auth';
 import './styles/index.css';
+import { startLogging } from './utils/logger';
+
+startLogging();
 
 const app = createApp(App);
 const pinia = createPinia();
