@@ -18,11 +18,11 @@ public class CspFilter {
             HttpServletResponse res = (HttpServletResponse) response;
             res.setHeader("Content-Security-Policy",
                     "default-src 'self'; " +
-                    "script-src 'self'; " +
+                    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
                     "style-src 'self' 'unsafe-inline'; " +
-                    "img-src 'self' data:; " +
+                    "img-src 'self' data: https:; " +
                     "font-src 'self' data:; " +
-                    "connect-src 'self'; " +
+                    "connect-src 'self' ws: wss:; " +
                     "frame-ancestors 'none'; " +
                     "object-src 'none'");
             chain.doFilter(request, response);

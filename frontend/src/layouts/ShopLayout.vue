@@ -29,7 +29,7 @@ async function handleCommand(command: string) {
 
 <template>
   <div style="padding: 20px 0 40px">
-    <header class="page-shell glass-card" style="padding: 16px 18px; position: sticky; top: 12px; z-index: 30">
+    <header class="page-shell glass-card shop-header" style="padding: 16px 18px">
       <div class="toolbar-row">
         <div class="flex-align-center-md">
           <router-link to="/" class="flex-align-center-sm">

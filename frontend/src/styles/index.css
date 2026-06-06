@@ -31,11 +31,20 @@ body {
 
 body {
   background-color: #f4f7fb;
-  background-image:
-    radial-gradient(circle at top left, rgba(99, 102, 241, 0.14), transparent 22%),
-    radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 26%),
-    linear-gradient(180deg, #f8fbff 0%, #f4f7fb 100%);
   color: var(--text);
+}
+
+/* Gradient via pseudo-element — isolates GPU composition so the body stays solid */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at top left, rgba(99, 102, 241, 0.14), transparent 22%),
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 26%);
+  will-change: contents;
 }
 
 a {
@@ -293,3 +302,78 @@ img {
 
 /* ===== form ===== */
 .form-two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* ===== anti-flicker: browser minimize/restore ===== */
+/* Force GPU layer promotion on sticky elements to prevent recomposition flash */
+.shop-header {
+  position: sticky;
+  top: 12px;
+  z-index: 30;
+  will-change: transform;
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 20px;
+  will-change: transform;
+}
+
+/* Isolate major layout containers to reduce composite scope */
+#app {
+  contain: layout style;
+}
+
+/* Suppress Element Plus loading overlay transitions during visibility change */
+.el-loading-mask {
+  transition: opacity 0.15s ease;
+  contain: layout style;
+}
+
+/* Prevent Element Plus menu underline flicker on GPU recomposition */
+.el-menu--horizontal {
+  will-change: contents;
+}
+
+/* Force solid background on html to prevent flash during GPU recomposition */
+html {
+  background: #f4f7fb !important;
+}
+
+/* ===== extension isolation: isolate any leaked extension elements ===== */
+/* If extension elements slip past JS defense, contain their layout impact */
+iframe:not([src]),
+iframe[src^="chrome-extension"],
+iframe[src^="moz-extension"],
+iframe[src^="safari-web-extension"],
+iframe[src^="ms-browser-extension"],
+div[id^="cx_"],
+div[id^="mx_"],
+div[id^="trk_"],
+div[id^="ext-"],
+div[data-extension],
+div[data-ext-injected] {
+  display: none !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  contain: strict !important;
+}
+
+/* Suppress ALL transitions during window blur (user Alt+Tab / minimize) */
+html:focus-within {
+  transition: none !important;
+}
+
+/* Lock GPU compositing during blur — prevents recomposition flash */
+html:not(:focus-within) #app {
+  contain: layout style paint;
+  will-change: auto;
+}
+
+/* Prevent extension-injected iframes from triggering layout shifts */
+iframe {
+  contain: strict;
+}

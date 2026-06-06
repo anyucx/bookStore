@@ -35,8 +35,9 @@ http.interceptors.response.use(
     const message = error?.response?.data?.message || error?.message || '网络请求异常';
     const authStore = useAuthStore();
     if (status === 401 || status === 403) {
+      // Auth logic always runs; only suppress the redirect toast when hidden
+      authStore.clearSession();
       if (!document.hidden) {
-        authStore.clearSession();
         const current = router.currentRoute.value;
         const target = current.path.startsWith('/admin') ? '/admin/login' : '/login';
         if (current.path !== target) {

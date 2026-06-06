@@ -29,7 +29,7 @@ async function logout() {
 <template>
   <div style="padding: 20px 0 28px">
     <div class="page-shell admin-two-col">
-      <aside class="glass-card" style="padding: 18px; min-height: calc(100vh - 40px); position: sticky; top: 20px">
+      <aside class="glass-card admin-sidebar" style="padding: 18px; min-height: calc(100vh - 40px)">
         <div class="flex-align-center-sm" style="padding: 6px 8px 18px">
           <div class="cover-placeholder cover-icon" style="font-size: 20px; font-weight: 700">管</div>
           <div>
